@@ -30,7 +30,7 @@ GBR-FeatureAnalysis/
 ├─ .gitignore
 ├─ Project.toml  # Julia project spec
 ├─ LICENSE.md
-├─ README.md  # this file
+├─ README.md     # this file
 ```
 
 ## Setup
