@@ -37,5 +37,5 @@ function plot_map(gdf::DataFrame; geom_col::Symbol=:geometry)
 
     display(f)
 
-    return f
+    return f, ga
 end

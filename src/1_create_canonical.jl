@@ -139,5 +139,5 @@ output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String
 GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(today()).gpkg"), output_features; crs=GFT.EPSG(4326))
 
 # Save copy of map
-f = plot_map(output_features)
+f, ga = plot_map(output_features)
 save(joinpath(OUTPUT_DIR, "rrap_mds_reefs_$(today()).png"), f)
