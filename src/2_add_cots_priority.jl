@@ -18,7 +18,7 @@ import ArchGDAL as AG
 include("common.jl")
 
 #Load required data
-RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(today()).gpkg"))
+RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))
 cots_priority = CSV.read(joinpath(DATA_DIR, "CoCoNet_CoTS_control_reefs_2024.csv"), DataFrame, missingstring="NA")
 
 #Format data
@@ -47,4 +47,4 @@ RRAP_lookup = select!(RRAP_lookup, Not(:cots_LON,:cots_LAT))
 RRAP_lookup.priority .= ifelse.(ismissing.(RRAP_lookup.priority), "NA", RRAP_lookup.priority)
 RRAP_lookup.priority = convert.(String, RRAP_lookup.priority)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(today())_2cots.gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
