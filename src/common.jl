@@ -90,7 +90,7 @@ function find_intersections(
                         push!(intersecting, [x[i, xid], y[j, yid],inter_area])
                     else push!(intersecting, [ missing , missing, missing])
                     end
-                else push!(intersecting, [ missing , missing, missing])
+                else push!(intersecting, [ x[i,xid] , missing, missing])
                 end
             end
             if all(ismissing,intersecting.area_ID)
@@ -115,7 +115,7 @@ function find_intersections(
                     prop_area = inter_area/AG.geomarea(reef_poly.geometry)
                     push!(intersecting, [x[i, xid], y[j, yid],prop_area])
 
-                else push!(intersecting, [ missing , missing, missing])
+                else push!(intersecting, [ x[i,xid] , missing, missing])
                 end
             end
             if all(ismissing,intersecting.area_ID)
