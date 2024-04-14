@@ -27,7 +27,7 @@ rename!(cots_priority, Dict("LAT" =>  :cots_LAT, "LON" => :cots_LON,
 cots_priority = cots_priority[:,[:GBRMPA_ID,:cots_LON,:cots_LAT,:priority]]
 
 #Adding cots priority into RRAP_lookup
-RRAP_lookup = leftjoin(RRAP_lookup, cots_priority, on=:GBRMPA_ID)
+RRAP_lookup = leftjoin(RRAP_lookup, cots_priority, on=:GBRMPA_ID, order = :left)
 println(names(RRAP_lookup))
 
 #cross-checking that the GBRMPA_ID from RRAP_lookup matches from cots_priority (within 100m - rounded values)

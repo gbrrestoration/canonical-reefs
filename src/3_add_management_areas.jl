@@ -24,7 +24,7 @@ management_areas = GDF.read(joinpath(DATA_DIR, "Great_Barrier_Reef_Marine_Park_M
 
 #find intersections and join to RRAP_lookout
 RRAP_management_areas = find_intersections(RRAP_lookup, management_areas, :GBRMPA_ID, :AREA_DESCR, :SHAPE)
-RRAP_lookup = leftjoin(RRAP_lookup, RRAP_management_areas, on = :GBRMPA_ID)
+RRAP_lookup = leftjoin(RRAP_lookup, RRAP_management_areas, on = :GBRMPA_ID, order = :left)
 
 #format data for output
 rename!(RRAP_lookup, Dict(:area_ID => :management_area))
