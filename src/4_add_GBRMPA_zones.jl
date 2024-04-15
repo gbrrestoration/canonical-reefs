@@ -30,7 +30,7 @@ RRAP_GBRMPA_zones = leftjoin(RRAP_GBRMPA_zones, unique_zones[:,[:TYPE,:ALT_ZONE]
 RRAP_lookup = leftjoin(RRAP_lookup, RRAP_GBRMPA_zones, on = :GBRMPA_ID, order = :left)
 
 #format data for output
-rename(RRAP_lookup, Dict(:TYPE => :GBRMPA_zones, :ALT_ZONE => :zone_colour))
+rename!(RRAP_lookup, Dict(:TYPE => :GBRMPA_zones, :ALT_ZONE => :zone_colour))
 RRAP_lookup.GBRMPA_zones .= ifelse.(ismissing.(RRAP_lookup.GBRMPA_zones), "NA", RRAP_lookup.GBRMPA_zones)
 RRAP_lookup.GBRMPA_zones = convert.(String, RRAP_lookup.GBRMPA_zones)
 RRAP_lookup.zone_colour .= ifelse.(ismissing.(RRAP_lookup.zone_colour), "NA", RRAP_lookup.zone_colour)
