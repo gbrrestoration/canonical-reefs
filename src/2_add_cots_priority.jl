@@ -44,6 +44,7 @@ scatter!(ga,spat_mismatch.cots_LON,spat_mismatch.LAT,markersize = 6)
 
 #format output data
 RRAP_lookup = select!(RRAP_lookup, Not(:cots_LON,:cots_LAT))
+rename!(RRAP_lookup, Dict(:priority => :cots_priority))
 RRAP_lookup.priority .= ifelse.(ismissing.(RRAP_lookup.priority), "NA", RRAP_lookup.priority)
 RRAP_lookup.priority = convert.(String, RRAP_lookup.priority)
 

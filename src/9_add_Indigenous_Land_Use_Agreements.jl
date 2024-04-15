@@ -22,7 +22,7 @@ include("common.jl")
 
 #reformat ILUA shapefile to geojson for loading with GeoDataFrames - can't load original with GDF.load() due to date formats in shp
 ILUA_geotable_init = GeoIO.load(joinpath(DATA_DIR, "indigenous_land_use_agreements/ILUA_Registered_Notified_Nat.shp"))
-GeoIO.save("Indigenous_Land_Use_Agreements.geojson", ILUA_geotable_init)
+GeoIO.save(joinpath(DATA_DIR,"Indigenous_Land_Use_Agreements.geojson"), ILUA_geotable_init)
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))
