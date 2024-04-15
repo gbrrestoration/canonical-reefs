@@ -1,0 +1,34 @@
+using
+    CSV,
+    Dates,
+    DataFrames
+
+using
+    GLMakie,
+    GeoMakie
+
+using
+    Statistics,
+    Bootstrap
+
+import GeoDataFrames as GDF
+import GeoFormatTypes as GFT
+import ArchGDAL as AG
+
+include("common.jl")
+
+
+#load input data
+RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))
+IPA_zones = GDF.read(joinpath(DATA_DIR, "Indigenous_Protected_Areas_-_Dedicated.geojson"))
+
+#find intersections and join to RRAP_lookup
+RRAP_IPA_zones = find_intersections(RRAP_lookup, IPA_zones, :GBRMPA_ID, :NAME, :geometry)
+RRAP_lookup = leftjoin(RRAP_lookup, RRAP_IPA_zones, on=:GBRMPA_ID, matchmissing=:notequal, order=:left)
+
+#format for data output
+rename!(RRAP_lookup, Dict(:area_ID => :Indigenous_Protected_Area))
+RRAP_lookup.Indigenous_Protected_Area .= ifelse.(ismissing.(RRAP_lookup.Indigenous_Protected_Area), "NA", RRAP_lookup.Indigenous_Protected_Area)
+RRAP_lookup.Indigenous_Protected_Area = convert.(String, RRAP_lookup.Indigenous_Protected_Area)
+
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
