@@ -18,7 +18,9 @@ import ArchGDAL as AG
 
 include("common.jl")
 
-#reformat ILUA shapefile to geojson for loading with GeoDataFrames
+#Indigenous Land Use Agreement data from http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
+
+#reformat ILUA shapefile to geojson for loading with GeoDataFrames - can't load original with GDF.load() due to date formats in shp
 ILUA_geotable_init = GeoIO.load(joinpath(DATA_DIR, "indigenous_land_use_agreements/ILUA_Registered_Notified_Nat.shp"))
 GeoIO.save("Indigenous_Land_Use_Agreements.geojson", ILUA_geotable_init)
 

@@ -17,6 +17,7 @@ import ArchGDAL as AG
 
 include("common.jl")
 
+#Indigenous Protected Area data from https://fed.dcceew.gov.au/datasets/75c48afce3bb445f9ce58633467e21ed_0/explore
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))

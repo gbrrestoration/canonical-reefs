@@ -17,12 +17,13 @@ import ArchGDAL as AG
 
 include("common.jl")
 
+#Cruise ship transit lane data from https://geohub-gbrmpa.hub.arcgis.com/datasets/5a93ef2976ce4c589c55098b329f012f_61/explore
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))
 cruise_transit = GDF.read(joinpath(DATA_DIR, "Great_Barrier_Reef_Marine_Park_Cruise_Ship_Transit_Lanes_20_-6667226202001620759.gpkg"))
 
-#find intersections and join to RRAP_lookup
+#find intersections and join to RRAP_lookup (use Proportion = true to only assign a zone to a reef if the proportion of the selected zone covers > 50% of that reef)
 RRAP_cruise_transit = find_intersections(RRAP_lookup, cruise_transit, :GBRMPA_ID, :AREA_DESCR, :SHAPE, Proportion=true)
 rename!(RRAP_cruise_transit, Dict(:area_ID => :AREA_DESCR))
 RRAP_cruise_transit = leftjoin(RRAP_cruise_transit, cruise_transit[:,[:AREA_DESCR,:NOTES]], on=:AREA_DESCR, matchmissing=:notequal, order=:left)

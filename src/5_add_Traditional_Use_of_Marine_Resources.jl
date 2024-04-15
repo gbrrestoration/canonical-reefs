@@ -17,6 +17,7 @@ import ArchGDAL as AG
 
 include("common.jl")
 
+#Traditional Use of Marine Resources data from https://geohub-gbrmpa.hub.arcgis.com/datasets/ef9027e13fd043c6b8aeda8faf756a86_55/explore?location=-17.864328%2C148.056236%2C5.81
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))

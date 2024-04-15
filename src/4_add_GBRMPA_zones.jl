@@ -17,6 +17,7 @@ import ArchGDAL as AG
 
 include("common.jl")
 
+#GBRMPA Marine Park Zoning data from https://geohub-gbrmpa.hub.arcgis.com/datasets/6dd0008183cc49c490f423e1b7e3ef5d_53/explore
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))

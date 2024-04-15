@@ -17,6 +17,7 @@ import ArchGDAL as AG
 
 include("common.jl")
 
+#GBRMPA management areas from https://geohub-gbrmpa.hub.arcgis.com/datasets/a21bbf8fa08346fabf825a849dfaf3b3_59/explore
 
 #load input data
 RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, "rrap_shared_lookup.gpkg"))
