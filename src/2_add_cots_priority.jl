@@ -1,20 +1,3 @@
-using
-    CSV,
-    Dates,
-    DataFrames
-
-using
-    GLMakie,
-    GeoMakie
-
-using
-    Statistics,
-    Bootstrap
-
-import GeoDataFrames as GDF
-import GeoFormatTypes as GFT
-import ArchGDAL as AG
-
 include("common.jl")
 
 # Load required data.
@@ -37,7 +20,7 @@ cots_priority = cots_priority[:, [:GBRMPA_ID, :cots_LON, :cots_LAT, :priority]]
 RRAP_lookup = leftjoin(RRAP_lookup, cots_priority, on=:GBRMPA_ID, order=:left)
 
 # Cross-checking that the GBRMPA_ID from RRAP_lookup matches from cots_priority (within 100m - rounded values).
-matching = DataFrame(match_lon=[],match_lat=[])
+matching = DataFrame(match_lon=[], match_lat=[])
 match_lon = (RRAP_lookup.cots_LON .< RRAP_lookup.LON .+ 0.001) .& (RRAP_lookup.cots_LON .> RRAP_lookup.LON .- 0.001)
 match_lat = (RRAP_lookup.cots_LAT .< RRAP_lookup.LAT .+ 0.001) .& (RRAP_lookup.cots_LAT .> RRAP_lookup.LAT .- 0.001)
 matching = DataFrame(match_lon=match_lon, match_lat=match_lat)
