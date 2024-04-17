@@ -14,25 +14,6 @@ incorporating data from:
 
 See project README.md for further details.
 """
-
-using
-    CSV,
-    Dates,
-    DataFrames
-
-using
-    GLMakie,
-    GeoMakie
-
-using
-    Statistics,
-    Bootstrap
-
-import GeoDataFrames as GDF
-import GeoFormatTypes as GFT
-import ArchGDAL as AG
-
-
 include("common.jl")
 
 # Load datasets
@@ -135,7 +116,7 @@ string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
 # Save geopackage
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(),"YYYY-mm-dd-THH-MM")).gpkg"), output_features; crs=GFT.EPSG(4326)) #removed time so name for next script is always the same
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(),"YYYY-mm-dd-THH-MM")).gpkg"), output_features; crs=GFT.EPSG(4326))
 
 # Save copy of map
 f, ga = plot_map(output_features)

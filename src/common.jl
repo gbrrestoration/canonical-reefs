@@ -1,3 +1,20 @@
+using
+    CSV,
+    Dates,
+    DataFrames
+
+using
+    GLMakie,
+    GeoMakie
+
+using
+    Statistics,
+    Bootstrap
+
+import GeoDataFrames as GDF
+import GeoFormatTypes as GFT
+import ArchGDAL as AG
+
 # Define constants for script
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
