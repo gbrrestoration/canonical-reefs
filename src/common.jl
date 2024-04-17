@@ -129,3 +129,19 @@ function find_intersections(
     end
     return rel_areas
 end
+
+"""
+    find_latest_file(dir::String)
+    Function that finds the latest file in a directory with the date format YYYY-mm-dd-THH-SS.
+    Intended to find the latest rrap_shared_lookup output file for input into the next script.
+
+# Arguments
+- `dir` : Target directory string.
+"""
+function find_latest_file(dir::String)
+    files = readdir(dir)
+    files = files[contains.(files, "rrap_shared_lookup")]
+    timestamps = map(f -> Dates.DateTime(chop(f, head=19, tail=5), "YYYY-mm-dd-THH-SS"), files)
+    latest = files[argmax(timestamps)]
+    return latest
+end
