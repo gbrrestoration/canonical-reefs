@@ -47,7 +47,7 @@ end
         xid::Symbol,
         yid::Symbol,
         ygeom_col::Symbol=:geometry;
-        Proportion::Bool=false,
+        proportion::Bool=false,
         )
 
 Find the areas of y that intersect with each polygon in x.
@@ -61,7 +61,7 @@ If Proportion = true: polygons of y are only chosen if the intersection with x i
 - `xid` : Column name holding unique IDs for x geometries (referred to as GBRMPA_ID in rel_areas)
 - `yid` : Column name holding variable of interest for y geometries
 - `ygeom_col` : Column name holding geometries in y
-- `Proportion` : Only select y polygons if the intersection with x polygon is > 50% of x polygon area
+- `proportion` : Only select y polygons if the intersection with x polygon is > 50% of x polygon area
 """
 
 function find_intersections(
@@ -70,11 +70,11 @@ function find_intersections(
     xid::Symbol,
     yid::Symbol,
     ygeom_col::Symbol=:geometry;
-    Proportion::Bool=false,
+    proportion::Bool=false,
     )
     rel_areas = DataFrame(GBRMPA_ID = [], area_ID = [])
 
-    if Proportion
+    if proportion
         for i in 1:size(x,1)
         reef_poly = x[i,:]
         intersecting = DataFrame(GBRMPA_ID = [], area_ID = [], inter_area = [])

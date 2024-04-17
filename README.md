@@ -154,11 +154,11 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 ## Adding Additional Data
 
 The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`. The setup script (`1_create_canonical.jl`) must be run before the following scripts. These scripts make use of the `find_intersections` function from `common.jl`. Each script saves to the same file: `rrap_shared_lookup.gpkg`
-- `2_add_cots_priority.jl` - Adds the priority level for cots intervention for each reef. 
-- `3_add_management_areas.jl` - Adds the corresponding regional management areas as used by GBRMPA for each reef.
-- `4_add_GBRMPA_zones.jl` - Adds the corresponding marine park zoning for each reef.
-- `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` - Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
-- `6_add_designated_shipping_areas.jl` - Adds the corresponding Shipping Exclusion Areas to each reef where applicable.
-- `7_add_cruise_transit_lanes.jl` - Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
-- `8_add_Indigenous_Protected_Areas.jl` - Adds the corresponding Indigenous Protected Areas to reefs where applicable.
-- `9_add_Indigenous_Land_Use_Agreements.jl` - Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
+- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef. 
+- `3_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
+- `4_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
+- `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
+- `6_add_designated_shipping_areas.jl` : Adds the corresponding Shipping Exclusion Areas to each reef where applicable.
+- `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
+- `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
+- `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
