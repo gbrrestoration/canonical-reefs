@@ -11,6 +11,20 @@ Attempt to create a standardized geopackage file including data from:
 - GBRMPA Reef Feature dataset:
   - https://data.gov.au/dataset/ds-dga-51199513-98fa-46e6-b766-8e1e1c896869/details
   - The metadata for the data.gov.au entry states it has been "Updated 16/08/2023"
+- GBRMPA regional management areas:
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/a21bbf8fa08346fabf825a849dfaf3b3_59/explore
+- GBRMPA marine park zones:
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/6dd0008183cc49c490f423e1b7e3ef5d_53/explore
+- Traditional Use of Marine Resource Agreements:
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/ef9027e13fd043c6b8aeda8faf756a86_55/explore?location=-17.864328%2C148.056236%2C5.81
+- Designated Shipping Areas:
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/19dffc7179f9469987f2dab6c1be77ad_74/explore
+- Cruise Ship Transit Lanes:
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/5a93ef2976ce4c589c55098b329f012f_61/explore?location=-16.689409%2C146.920083%2C6.33
+- Indigenous Protected Areas:
+  - https://fed.dcceew.gov.au/datasets/75c48afce3bb445f9ce58633467e21ed_0/explore
+- Indigenous Land Use Agreements:
+  - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -136,3 +150,15 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 # "11-310"
 # "11-311"
 ```
+
+## Adding Additional Data
+
+The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`. The setup script (`1_create_canonical.jl`) must be run before the following scripts. These scripts make use of the `find_intersections` function from `common.jl`. Each script saves to the same file: `rrap_shared_lookup.gpkg`
+- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef. 
+- `3_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
+- `4_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
+- `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
+- `6_add_designated_shipping_areas.jl` : Adds the corresponding Shipping Exclusion Areas to each reef where applicable.
+- `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
+- `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
+- `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.

@@ -14,27 +14,7 @@ incorporating data from:
 
 See project README.md for further details.
 """
-
-using
-    CSV,
-    Dates,
-    DataFrames
-
-using
-    GLMakie,
-    GeoMakie
-
-using
-    Statistics,
-    Bootstrap
-
-import GeoDataFrames as GDF
-import GeoFormatTypes as GFT
-import ArchGDAL as AG
-
-
 include("common.jl")
-
 
 # Load datasets
 ac_lookup = CSV.read(joinpath(DATA_DIR, "GBR_reefs_lookup_table_Anna_update_2024-03-06.csv"), DataFrame, missingstring="NA")
@@ -136,8 +116,8 @@ string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
 # Save geopackage
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(today()).gpkg"), output_features; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(),"YYYY-mm-dd-THH-MM")).gpkg"), output_features; crs=GFT.EPSG(4326))
 
 # Save copy of map
-f = plot_map(output_features)
+f, ga = plot_map(output_features)
 save(joinpath(OUTPUT_DIR, "rrap_mds_reefs_$(today()).png"), f)
