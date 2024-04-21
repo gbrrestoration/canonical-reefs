@@ -27,7 +27,7 @@ matching = DataFrame(match_lon=match_lon, match_lat=match_lat)
 spat_mismatch = RRAP_lookup[(findall(skipmissing(.!matching.match_lon))),:]
 
 # Visual check of how close mismatching coords are to original coords.
-reef_plot,ga = plot_map(spat_mismatch)
+reef_plot, ga = plot_map(spat_mismatch)
 scatter!(ga, spat_mismatch.LON, spat_mismatch.LAT, markersize = 8)
 scatter!(ga, spat_mismatch.cots_LON, spat_mismatch.LAT, markersize = 6)
 save(joinpath(OUTPUT_DIR, "rrap_cots_data_mismatching_locations_$(today()).png"), f)
