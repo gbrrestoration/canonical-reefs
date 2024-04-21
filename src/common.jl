@@ -99,7 +99,7 @@ end
         yid::Symbol,
         ygeom_col::Symbol=:geometry;
         proportion::Bool=false,
-        )
+    )::DataFrame
 
 Find the areas of y that intersect with each polygon in x.
 'rel_areas' contains corresponding yid for each intersecting polygon in x (can then be joined to x).
@@ -120,60 +120,73 @@ function find_intersections(
     xid::Symbol,
     yid::Symbol,
     ygeom_col::Symbol=:geometry;
-    proportion::Bool=false,
-    )
-    rel_areas = DataFrame(GBRMPA_ID = [], area_ID = [])
+    proportion::Bool=false
+)::DataFrame
+    rel_areas = DataFrame(; GBRMPA_ID=[], area_ID=[])
 
     if proportion
-        for i in 1:size(x,1)
-        reef_poly = x[i,:]
-        intersecting = DataFrame(GBRMPA_ID = [], area_ID = [], inter_area = [])
+        for i in 1:size(x, 1)
+            reef_poly = x[i, :]
+            intersecting = DataFrame(; GBRMPA_ID=[], area_ID=[], inter_area=[])
 
-            for j in 1:size(y,1)
-            interest_area = y[j,:]
+            for j in 1:size(y, 1)
+                interest_area = y[j, :]
 
                 if AG.intersects(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.intersection(reef_poly.geometry, interest_area[ygeom_col])
+                    inter_area = AG.intersection(
+                        reef_poly.geometry, interest_area[ygeom_col]
+                    )
                     inter_area = AG.geomarea(inter_area)
-                    prop_area = inter_area/AG.geomarea(reef_poly.geometry)
+                    prop_area = inter_area / AG.geomarea(reef_poly.geometry)
                     if prop_area >= 0.5
-                        push!(intersecting, [x[i, xid], y[j, yid],inter_area])
-                    else push!(intersecting, [ missing , missing, missing])
+                        push!(intersecting, [x[i, xid], y[j, yid], inter_area])
+                    else
+                        push!(intersecting, [missing, missing, missing])
                     end
-                else push!(intersecting, [ x[i,xid] , missing, missing])
+                else
+                    push!(intersecting, [x[i, xid], missing, missing])
                 end
             end
-            if all(ismissing,intersecting.area_ID)
-                push!(rel_areas, [intersecting[1,xid], intersecting[1,:area_ID]])
+            if all(ismissing, intersecting.area_ID)
+                push!(rel_areas, [intersecting[1, xid], intersecting[1, :area_ID]])
             else
                 dropmissing!(intersecting)
-                push!(rel_areas, [intersecting[findmax(intersecting.inter_area)[2],xid],
-                intersecting[findmax(intersecting.inter_area)[2],:area_ID]])
+                push!(
+                    rel_areas,
+                    [intersecting[findmax(intersecting.inter_area)[2], xid],
+                        intersecting[findmax(intersecting.inter_area)[2], :area_ID]]
+                )
             end
         end
     else
-        for i in 1:size(x,1)
-            reef_poly = x[i,:]
-            intersecting = DataFrame(GBRMPA_ID = [], area_ID = [], inter_area = [])
+        for i in 1:size(x, 1)
+            reef_poly = x[i, :]
+            intersecting = DataFrame(; GBRMPA_ID=[], area_ID=[], inter_area=[])
 
-            for j in 1:size(y,1)
-                interest_area = y[j,:]
+            for j in 1:size(y, 1)
+                interest_area = y[j, :]
 
                 if AG.intersects(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.intersection(reef_poly.geometry, interest_area[ygeom_col])
+                    inter_area = AG.intersection(
+                        reef_poly.geometry, interest_area[ygeom_col]
+                    )
                     inter_area = AG.geomarea(inter_area)
-                    prop_area = inter_area/AG.geomarea(reef_poly.geometry)
-                    push!(intersecting, [x[i, xid], y[j, yid],prop_area])
+                    prop_area = inter_area / AG.geomarea(reef_poly.geometry)
+                    push!(intersecting, [x[i, xid], y[j, yid], prop_area])
 
-                else push!(intersecting, [ x[i,xid] , missing, missing])
+                else
+                    push!(intersecting, [x[i, xid], missing, missing])
                 end
             end
-            if all(ismissing,intersecting.area_ID)
-                push!(rel_areas, [intersecting[1,xid], intersecting[1,:area_ID]])
+            if all(ismissing, intersecting.area_ID)
+                push!(rel_areas, [intersecting[1, xid], intersecting[1, :area_ID]])
             else
                 dropmissing!(intersecting)
-                push!(rel_areas, [intersecting[findmax(intersecting.inter_area)[2],xid],
-                intersecting[findmax(intersecting.inter_area)[2],:area_ID]])
+                push!(
+                    rel_areas,
+                    [intersecting[findmax(intersecting.inter_area)[2], xid],
+                        intersecting[findmax(intersecting.inter_area)[2], :area_ID]]
+                )
             end
         end
     end
