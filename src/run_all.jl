@@ -13,3 +13,4 @@ include("6_add_designated_shipping_area.jl");
 include("7_add_cruise_transit_lanes.jl");
 include("8_add_Indigenous_Protected_Areas.jl");
 include("9_add_Indigenous_Land_Use_Agreements.jl");
+include("10_extract_reef_depths.jl");
