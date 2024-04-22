@@ -196,24 +196,27 @@ end
         target_dir::String;
         prefix::String="rrap_canonical",
         ext::String="gpkg"
-    )
+    )::String
 
 Identify the latest output file in a directory based on the timestamp included in the
 file name (default: `YYYY-mm-dd-THH-MM-SS`). Intended to find the latest output file for
 input into the next script.
 
 # Arguments
-- `target_dir` : Target directory string
+- `target_dir` : Target directory
 - `prefix` : prefix of target file
 - `ext` : the file extension
+
+# Returns
+Path to latest output file.
 """
 function find_latest_file(
     target_dir::String;
     prefix::String="rrap_canonical",
     ext::String="gpkg"
-)
+)::String
     # Get list of files matching the given pattern
-    candidate_files = glob("$(prefix)*.$(ext)", OUTPUT_DIR)
+    candidate_files = glob("$(prefix)*.$(ext)", target_dir)
 
     timestamps = map(f -> _get_file_timestamp(f, length(DATE_FORMAT)), candidate_files)
     latest = candidate_files[argmax(timestamps)]
