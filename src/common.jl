@@ -22,6 +22,15 @@ DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
 DATE_FORMAT = "YYYY-mm-dd-THH-MM-SS"
 
+CONFIG = Dict()
+BATHY_DATA_DIR = ""
+try
+    global CONFIG = TOML.parsefile("./.config.toml")
+    global BATHY_DATA_DIR = CONFIG["bathy"]["BATHY_DATA_DIR"]
+catch
+    @warn "No configuration file found!"
+end
+
 function _convert_plottable(gdf::Union{DataFrame, DataFrameRow}, geom_col::Symbol)
     local plottable
     try
