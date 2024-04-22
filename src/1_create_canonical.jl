@@ -117,7 +117,7 @@ string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
 # Save geopackage
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(),"YYYY-mm-dd-THH-MM")).gpkg"), output_features; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=GFT.EPSG(4326))
 
 # Save copy of map
 f, ga = plot_map(output_features)

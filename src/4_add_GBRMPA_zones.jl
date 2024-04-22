@@ -3,7 +3,8 @@ include("common.jl")
 # GBRMPA Marine Park Zoning data from https://geohub-gbrmpa.hub.arcgis.com/datasets/6dd0008183cc49c490f423e1b7e3ef5d_53/explore
 
 # Load input data.
-RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, find_latest_file(OUTPUT_DIR)))
+canonical_file = find_latest_file(OUTPUT_DIR)
+RRAP_lookup = GDF.read(canonical_file)
 GBRMPA_zones = GDF.read(joinpath(DATA_DIR, "Great_Barrier_Reef_Marine_Park_Zoning_20_4418126048110066699.gpkg"))
 unique_zones = unique(GBRMPA_zones[:, [:TYPE, :ALT_ZONE]])
 
@@ -20,4 +21,4 @@ RRAP_lookup.GBRMPA_zones = convert.(String, RRAP_lookup.GBRMPA_zones)
 RRAP_lookup.zone_colour .= ifelse.(ismissing.(RRAP_lookup.zone_colour), "NA", RRAP_lookup.zone_colour)
 RRAP_lookup.zone_colour = convert.(String, RRAP_lookup.zone_colour)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))

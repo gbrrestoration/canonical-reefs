@@ -3,7 +3,8 @@ include("common.jl")
 #Cruise ship transit lane data from https://geohub-gbrmpa.hub.arcgis.com/datasets/5a93ef2976ce4c589c55098b329f012f_61/explore
 
 # Load input data.
-RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, find_latest_file(OUTPUT_DIR)))
+canonical_file = find_latest_file(OUTPUT_DIR)
+RRAP_lookup = GDF.read(canonical_file)
 cruise_transit = GDF.read(joinpath(DATA_DIR, "Great_Barrier_Reef_Marine_Park_Cruise_Ship_Transit_Lanes_20_-6667226202001620759.gpkg"))
 
 # Find intersections and join to RRAP_lookup (use proportion = true to only assign a zone to a reef if the proportion of the selected zone covers > 50% of that reef).
@@ -19,4 +20,4 @@ RRAP_lookup.cruise_transit_lane = convert.(String, RRAP_lookup.cruise_transit_la
 RRAP_lookup.cruise_transit_notes .= ifelse.(ismissing.(RRAP_lookup.cruise_transit_notes), "NA", RRAP_lookup.cruise_transit_notes)
 RRAP_lookup.cruise_transit_notes = convert.(String, RRAP_lookup.cruise_transit_notes)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))

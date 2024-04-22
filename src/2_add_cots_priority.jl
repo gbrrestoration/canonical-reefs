@@ -1,7 +1,8 @@
 include("common.jl")
 
 # Load required data.
-RRAP_lookup = GDF.read(joinpath(OUTPUT_DIR, find_latest_file(OUTPUT_DIR)))
+canonical_file = find_latest_file(OUTPUT_DIR)
+RRAP_lookup = GDF.read(canonical_file)
 cots_priority = CSV.read(joinpath(DATA_DIR, "CoCoNet_CoTS_control_reefs_2024.csv"), DataFrame, missingstring="NA")
 
 # Format data.
@@ -38,4 +39,5 @@ rename!(RRAP_lookup, Dict(:priority=>:cots_priority))
 RRAP_lookup.cots_priority .= ifelse.(ismissing.(RRAP_lookup.cots_priority), "NA", RRAP_lookup.cots_priority)
 RRAP_lookup.cots_priority = convert.(String, RRAP_lookup.cots_priority)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+# Replace canonical file with updated data
+GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
