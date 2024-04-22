@@ -1,3 +1,5 @@
+using Glob
+
 using
     CSV,
     Dates,
@@ -164,19 +166,57 @@ function find_intersections(
 end
 
 """
-    find_latest_file(dir::String)
+    _get_file_timestamp(file_path, dt_length)::DateTime
 
-Function that finds the latest file in a directory with the date format YYYY-mm-dd-THH-SS.
-Intended to find the latest rrap_shared_lookup output file for input into the next script.
+Extract the timestamp from a given file name.
+"""
+function _get_file_timestamp(file_path, dt_length)::DateTime
+    # Get name of file without extension
+    filename = splitext(basename(file_path))[1]
+
+    local fn_timestamp
+    try
+        fn_timestamp = Dates.DateTime(filename[end-(dt_length-1):end], DATE_FORMAT)
+    catch err
+        if !(err isa ArgumentError)
+            rethrow(err)
+        end
+
+        # Otherwise, some unexpected date format was encountered so we assign an
+        # very early date/time.
+        fn_timestamp = Dates.DateTime("1900-01-01-T00-00-00", DATE_FORMAT)
+    end
+
+    # Return datetime stamp
+    return fn_timestamp
+end
+
+"""
+    find_latest_file(
+        target_dir::String;
+        prefix::String="rrap_canonical",
+        ext::String="gpkg"
+    )
+
+Identify the latest output file in a directory based on the timestamp included in the
+file name (default: `YYYY-mm-dd-THH-MM-SS`). Intended to find the latest output file for
+input into the next script.
 
 # Arguments
-- `dir` : Target directory string.
+- `target_dir` : Target directory string
+- `prefix` : prefix of target file
+- `ext` : the file extension
 """
-function find_latest_file(dir::String)
-    files = readdir(dir)
-    files = files[contains.(files, "rrap_shared_lookup")]
-    timestamps = map(f -> Dates.DateTime(chop(f, head=19, tail=5), "YYYY-mm-dd-THH-SS"), files)
-    latest = files[argmax(timestamps)]
+function find_latest_file(
+    target_dir::String;
+    prefix::String="rrap_canonical",
+    ext::String="gpkg"
+)
+    # Get list of files matching the given pattern
+    candidate_files = glob("$(prefix)*.$(ext)", OUTPUT_DIR)
+
+    timestamps = map(f -> _get_file_timestamp(f, length(DATE_FORMAT)), candidate_files)
+    latest = candidate_files[argmax(timestamps)]
 
     return latest
 end
