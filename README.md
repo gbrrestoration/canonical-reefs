@@ -114,21 +114,21 @@ count(ac_lookup.UNIQUE_ID .∈ [rme_features.UNIQUE_ID])
 
 ## Resolving discrepancies
 
-To resolve the above, I have:
+To resolve the above:
 
-1. Match reefs by their UNIQUE IDs between RME and GBRMPA datasets
-2. Find the discrepancies between the two
+1. Reefs are matched by their UNIQUE IDs between RME and GBRMPA datasets
+2. Determine the discrepancies between the two
 3. Confirm the discrepancies between RME and GBRMPA datasets are the same as the ones
    reported above
-4. Replace the older IDs with the new ones.
+4. Replace the older IDs with the new updated IDs.
 5. Copy the spatial geometries from the GBRMPA feature set
 6. Reorder the dataframe based on the order given by AC lookup table (which should be
    identical to the RME features)
-7. The AC lookup table and RME datasets ostensibly match by row order, so I copy columns
-   of interest on that basis.
+7. The AC lookup table and RME datasets ostensibly match by row order, columns of interest
+   are copied on that basis.
 
 **In conversation with YM. Bozec, A. Cresswell, and M. Puotinen, there are several other
-issues not yet accounted for (to be detailed once all info has been collated).**
+issues yet to be accounted for (to be detailed once all info has been collated).**
 
 ## Relevant details
 
@@ -169,7 +169,7 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 
 The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`.
 The setup script (`1_create_canonical.jl`) must be run before the following scripts.
-These scripts make use of the `find_intersections` function from `common.jl`.
+These scripts make use of the `find_intersections()` function defined in `common.jl`.
 Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 
 - `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef.
@@ -180,3 +180,49 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
 - `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
+- `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data
+
+## Notes on feature attributes
+
+### UNIQUE IDs
+
+There needs to be a unique identifier so that all models can link their conceptualizations
+of a "reef" back to a common dataset. In Relational Databases this is known as a
+"Primary Key". Reef names should not be relied on as there are many "reefs" with
+(near-)identical or duplicate names. For example, 57.2% of reefs share the name "U/N Reef".
+
+Unfortunately, due to slight changes over time including updated processing workflows,
+revisions by external orgs, and/or changes to definitions of what a "reef" is, the assigned
+`UNIQUE_ID` no longer match.
+
+To allow cross-comparison and validation, the following IDs are included:
+
+- `UNIQUE_ID` : From the most recent GBRMPA reef feature dataset
+- `RME_UNIQUE_ID` : Taken from the most recent ReefMod Engine reef list file
+- `GBRMPA_ID` : An alternate reef id list maintained by GBRMPA (e.g., "10-330", ""10-318a")
+- `RME_GBRMPA_ID` : As above, but as defined by the ReefMod Engine reef list file
+- `LTMP_ID` : A seven character ID largely following the `GBRMPA_ID` format maintained by AIMS for the Long-Term Monitoring Program
+- `LON` and `LAT` : Pre-determined longitude and latitudes from GBRMPA reef feature set
+- `reef_name`
+
+Additionally, **all attribute names are standardized to follow `snake_case` formatting**, except
+in cases where:
+
+- Pre-existing naming convention (e.g., `UNIQUE_ID`)
+- An established acronym exists (`TUMRA`, `GBRMPA`, `LTMP`, `COTS`, `EcoRRAP`)
+
+
+### COTS Priority reefs
+
+Paraphrasing details from Dr S. Condie (pers comm. Thu 2024-03-28 14:23).
+
+GBRMPA classifies reefs as:
+
+- T = target
+- P = priority
+- N = non-priority
+
+In both CoCoNet and ReefMod, reefs are controlled until annual capacity (based on number of
+vessels and divers) is fully utilised, starting by selecting randomly from the target reefs,
+then randomly from the priority reefs, and then - if there is spare capacity, which is
+rarely - randomly from the non-priority.
