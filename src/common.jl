@@ -22,14 +22,14 @@ OUTPUT_DIR = "../output"
 function _convert_plottable(gdf::Union{DataFrame, DataFrameRow}, geom_col::Symbol)
     local plottable
     try
-        if typeof(gdf) isa DataFrame
+        if gdf isa DataFrame
             plottable = GeoMakie.geo2basic(AG.forceto.(gdf[!, geom_col], AG.wkbPolygon))
         else
             plottable = GeoMakie.geo2basic(AG.forceto(gdf[geom_col], AG.wkbPolygon))
         end
     catch
         # Column is already in a plottable form, or some unrelated error occurred
-        if typeof(gdf) isa DataFrame
+        if gdf isa DataFrame
             plottable = gdf[:, geom_col]
         else
             plottable = [gdf[geom_col]]
