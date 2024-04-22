@@ -2,9 +2,6 @@
 
 Attempt to create a standardized geopackage file including data from:
 
-- `reefmod_gbr.gpkg` created from a combination of a shapefile found on Teams which provides
-  the reef polygons and ReefMod id list CSV (see entry below).
-  - This should be updated with a known canonical copy of the GBRMPA Reef Feature dataset
 - A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
   This is referred to as the AC lookup table.
 - `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
@@ -49,7 +46,16 @@ GBR-FeatureAnalysis/
 
 ## Setup
 
-Usual Julia setup.
+The location of project-specific datasets need to be defined by creating a `.config.toml`
+file inside the `src` directory. The options set in this file is unique to each user, and
+should not be committed to the repository.
+
+```TOML
+[bathy]
+BATHY_DATA_DIR = "path to bathymetry data"  # location of larger raster datasets
+```
+
+Otherwise, follow the usual Julia setup process.
 
 ```bash
 $ julia --project=.
@@ -59,9 +65,14 @@ $ julia --project=.
 # Instantiate project and switch to src directory
 ]instantiate
 ;cd src
+```
 
+```julia
 # Run first script
 include("1_create_canonical.jl")
+
+# Run all scripts
+include("run_all.jl")
 ```
 
 ## Discrepancies
@@ -153,8 +164,12 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 
 ## Adding Additional Data
 
-The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`. The setup script (`1_create_canonical.jl`) must be run before the following scripts. These scripts make use of the `find_intersections` function from `common.jl`. Each script saves to the same file: `rrap_shared_lookup.gpkg`
-- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef. 
+The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`.
+The setup script (`1_create_canonical.jl`) must be run before the following scripts.
+These scripts make use of the `find_intersections` function from `common.jl`.
+Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
+
+- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef.
 - `3_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
 - `4_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
 - `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.

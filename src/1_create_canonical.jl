@@ -2,15 +2,12 @@
 Create a standardized geopackage file for use as a canonical/reference dataset,
 incorporating data from:
 
-- `reefmod_gbr.gpkg` created from a combination of a shapefile found on Teams which provides
-  the reef polygons and ReefMod id list CSV (see entry below).
-    - This should be updated with a known canonical copy of the GBRMPA Reef Feature dataset
-- A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
-  This is referred to as the AC lookup table.
-- `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
 - GBRMPA Reef Feature dataset:
     - https://data.gov.au/dataset/ds-dga-51199513-98fa-46e6-b766-8e1e1c896869/details
     - The metadata for the data.gov.au entry states it has been "Updated 16/08/2023"
+- A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
+  This is referred to as the AC lookup table.
+- `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
 
 See project README.md for further details.
 """
