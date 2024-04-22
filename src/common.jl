@@ -19,6 +19,26 @@ import ArchGDAL as AG
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
 
+function _convert_plottable(gdf::Union{DataFrame, DataFrameRow}, geom_col::Symbol)
+    local plottable
+    try
+        if gdf isa DataFrame
+            plottable = GeoMakie.geo2basic(AG.forceto.(gdf[!, geom_col], AG.wkbPolygon))
+        else
+            plottable = GeoMakie.geo2basic(AG.forceto(gdf[geom_col], AG.wkbPolygon))
+        end
+    catch
+        # Column is already in a plottable form, or some unrelated error occurred
+        if gdf isa DataFrame
+            plottable = gdf[:, geom_col]
+        else
+            plottable = [gdf[geom_col]]
+        end
+    end
+
+    return plottable
+end
+
 """
     plot_map(gdf::DataFrame; geom_col::Symbol=:geometry)
 
@@ -28,7 +48,7 @@ Convenience plot function.
 - `gdf` : GeoDataFrame
 - `geom_col` : Column name holding geometries to plot
 """
-function plot_map(gdf::DataFrame; geom_col::Symbol=:geometry)
+function plot_map(gdf::Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry)
     f = Figure(; size=(600, 900))
     ga = GeoAxis(
         f[1,1];
@@ -44,17 +64,31 @@ function plot_map(gdf::DataFrame; geom_col::Symbol=:geometry)
         ygridwidth=0.5,
     )
 
-    plottable = GeoMakie.geo2basic(AG.forceto.(gdf[!, geom_col], AG.wkbPolygon))
+    plottable = _convert_plottable(gdf, geom_col)
     poly!(ga, plottable)
-
-    # Need to auto-set limits explicitly, otherwise tick labels don't appear properly (?)
-    # xlims!(ga)
-    # ylims!(ga)
-    # autolimits!(ga)
 
     display(f)
 
     return f, ga
+end
+
+function plot_map!(ga::GeoAxis, gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
+
+    plottable = _convert_plottable(gdf, geom_col)
+    if !isnothing(color)
+        poly!(ga, plottable, color=color)
+    else
+        poly!(ga, plottable)
+    end
+
+    # Set figure limits explicitly
+    xlims!(ga)
+    ylims!(ga)
+
+    return nothing
+end
+function plot_map!(gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
+    return plot_map!(current_axis(), gdf; geom_col=geom_col, color=color)
 end
 
 """
@@ -80,7 +114,6 @@ If Proportion = true: polygons of y are only chosen if the intersection with x i
 - `ygeom_col` : Column name holding geometries in y
 - `proportion` : Only select y polygons if the intersection with x polygon is > 50% of x polygon area
 """
-
 function find_intersections(
     x::DataFrame,
     y::DataFrame,
