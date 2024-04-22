@@ -214,7 +214,6 @@ in cases where:
 - Pre-existing naming convention (e.g., `UNIQUE_ID`)
 - An established acronym exists (`TUMRA`, `GBRMPA`, `LTMP`, `COTS`, `EcoRRAP`)
 
-
 ### COTS Priority reefs
 
 Paraphrasing details from Dr S. Condie (pers comm. Thu 2024-03-28 14:23).
