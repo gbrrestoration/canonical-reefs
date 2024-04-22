@@ -48,8 +48,7 @@ summary_func(x) = (length(unique(x)) > 1) ? [-maximum(x), -mean(x), -median(x), 
 depths = SharedArray(zeros(Float64, size(gbr_features, 1), 5))
 errored_empty = SharedArray(zeros(Int64, size(gbr_features, 1)))
 
-# @showprogress dt=10 "Prepping benthic/geomorphic data..."
-@time for reg in REGIONS
+for reg in REGIONS
     @info "Extracting depths for $(reg)"
 
     src_bathy_path = first(glob("*.tif", joinpath(BATHY_DATA_DIR, "bathy", reg)))
