@@ -15,4 +15,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:Indigenous_Protected_Area))
 RRAP_lookup.Indigenous_Protected_Area .= ifelse.(ismissing.(RRAP_lookup.Indigenous_Protected_Area), "NA", RRAP_lookup.Indigenous_Protected_Area)
 RRAP_lookup.Indigenous_Protected_Area = convert.(String, RRAP_lookup.Indigenous_Protected_Area)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), DATE_FORMAT)).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))

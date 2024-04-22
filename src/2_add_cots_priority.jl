@@ -38,4 +38,4 @@ rename!(RRAP_lookup, Dict(:priority=>:cots_priority))
 RRAP_lookup.cots_priority .= ifelse.(ismissing.(RRAP_lookup.cots_priority), "NA", RRAP_lookup.cots_priority)
 RRAP_lookup.cots_priority = convert.(String, RRAP_lookup.cots_priority)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), DATE_FORMAT)).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))

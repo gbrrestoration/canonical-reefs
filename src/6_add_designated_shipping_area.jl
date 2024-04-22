@@ -16,4 +16,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:designated_shipping_area))
 RRAP_lookup.designated_shipping_area .= ifelse.(ismissing.(RRAP_lookup.designated_shipping_area), "NA", RRAP_lookup.designated_shipping_area)
 RRAP_lookup.designated_shipping_area = convert.(String, RRAP_lookup.designated_shipping_area)
 
-GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), "YYYY-mm-dd-THH-MM")).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_shared_lookup_$(Dates.format(now(), DATE_FORMAT)).gpkg"), RRAP_lookup; crs=GFT.EPSG(4326))
