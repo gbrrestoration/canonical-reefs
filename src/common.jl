@@ -95,86 +95,67 @@ end
     find_intersections(
         x::DataFrame,
         y::DataFrame,
-        xid::Symbol,
-        yid::Symbol,
-        ygeom_col::Symbol=:geometry;
+        x_id::Symbol,
+        y_id::Symbol,
+        y_geom_col::Symbol=:geometry;
         proportion::Bool=false,
-        )
+    )::DataFrame
 
-Find the areas of y that intersect with each polygon in x.
-'rel_areas' contains corresponding yid for each intersecting polygon in x (can then be joined to x).
-If Proportion = true: polygons of y are only chosen if the intersection with x is > 50% the area of x.
-(Default: if proportion = false: the polygon of y that intersects the most area of x will be chosen).
+Find the areas of `y` that intersect with each polygon in `x`.
+`rel_areas` contains corresponding `y_id` for each intersecting polygon in x (can then be joined to `x`).
+If Proportion = true: polygons of `y` are only chosen if the intersection with `x` is > 50% the area of `x`.
+(Default: if `proportion = false`: the polygon of `y` that intersects the most area of `x` will be chosen).
 
 # Arguments
-- `x` : GeoDataFrame
-- `y` : GeoDataFrame
+- `x` : The target GeoDataFrame to compare with
+- `y` : GeoDataFrame containing polygons to match against `x`
 - `xid` : Column name holding unique IDs for x geometries (referred to as GBRMPA_ID in rel_areas)
 - `yid` : Column name holding variable of interest for y geometries
-- `ygeom_col` : Column name holding geometries in y
+- `y_geom_col` : Column name holding geometries in y
 - `proportion` : Only select y polygons if the intersection with x polygon is > 50% of x polygon area
 """
 function find_intersections(
     x::DataFrame,
     y::DataFrame,
-    xid::Symbol,
-    yid::Symbol,
-    ygeom_col::Symbol=:geometry;
-    proportion::Bool=false,
-    )
-    rel_areas = DataFrame(GBRMPA_ID = [], area_ID = [])
+    x_id::Symbol,
+    y_id::Symbol,
+    y_geom_col::Symbol=:geometry;
+    proportion::Bool=false
+)::DataFrame
+    rel_areas = DataFrame(; GBRMPA_ID=[], area_ID=[])
 
-    if proportion
-        for i in 1:size(x,1)
-        reef_poly = x[i,:]
-        intersecting = DataFrame(GBRMPA_ID = [], area_ID = [], inter_area = [])
+    for reef_poly in eachrow(x)
+        intersecting = DataFrame(; GBRMPA_ID=[], area_ID=[], inter_area=[])
 
-            for j in 1:size(y,1)
-            interest_area = y[j,:]
+        for interest_area in eachrow(y)
+            if AG.intersects(reef_poly.geometry, interest_area[y_geom_col])
+                inter_area = AG.intersection(
+                    reef_poly.geometry, interest_area[y_geom_col]
+                )
 
-                if AG.intersects(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.intersection(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.geomarea(inter_area)
-                    prop_area = inter_area/AG.geomarea(reef_poly.geometry)
+                inter_area = AG.geomarea(inter_area)
+                prop_area = inter_area / AG.geomarea(reef_poly.geometry)
+                if proportion
                     if prop_area >= 0.5
-                        push!(intersecting, [x[i, xid], y[j, yid],inter_area])
-                    else push!(intersecting, [ missing , missing, missing])
+                        push!(intersecting, [reef_poly[x_id], interest_area[y_id], inter_area])
+                    else
+                        push!(intersecting, [missing, missing, missing])
                     end
-                else push!(intersecting, [ x[i,xid] , missing, missing])
                 end
-            end
-            if all(ismissing,intersecting.area_ID)
-                push!(rel_areas, [intersecting[1,xid], intersecting[1,:area_ID]])
             else
-                dropmissing!(intersecting)
-                push!(rel_areas, [intersecting[findmax(intersecting.inter_area)[2],xid],
-                intersecting[findmax(intersecting.inter_area)[2],:area_ID]])
+                push!(intersecting, [reef_poly[x_id], missing, missing])
             end
         end
-    else
-        for i in 1:size(x,1)
-            reef_poly = x[i,:]
-            intersecting = DataFrame(GBRMPA_ID = [], area_ID = [], inter_area = [])
 
-            for j in 1:size(y,1)
-                interest_area = y[j,:]
-
-                if AG.intersects(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.intersection(reef_poly.geometry, interest_area[ygeom_col])
-                    inter_area = AG.geomarea(inter_area)
-                    prop_area = inter_area/AG.geomarea(reef_poly.geometry)
-                    push!(intersecting, [x[i, xid], y[j, yid],prop_area])
-
-                else push!(intersecting, [ x[i,xid] , missing, missing])
-                end
-            end
-            if all(ismissing,intersecting.area_ID)
-                push!(rel_areas, [intersecting[1,xid], intersecting[1,:area_ID]])
-            else
-                dropmissing!(intersecting)
-                push!(rel_areas, [intersecting[findmax(intersecting.inter_area)[2],xid],
-                intersecting[findmax(intersecting.inter_area)[2],:area_ID]])
-            end
+        if all(ismissing, intersecting.area_ID)
+            push!(rel_areas, [intersecting[1, x_id], intersecting[1, :area_ID]])
+        else
+            dropmissing!(intersecting)
+            max_inter_area = argmax(intersecting.inter_area)
+            push!(
+                rel_areas,
+                [intersecting[max_inter_area, x_id], intersecting[max_inter_area, :area_ID]]
+            )
         end
     end
 
