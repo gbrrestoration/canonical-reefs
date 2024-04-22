@@ -1,3 +1,9 @@
+"""
+Run all steps to create the canonical reef features dataset.
+
+Documented details found in the README and individual scripts.
+"""
+
 include("1_create_canonical.jl")
 include("2_add_cots_priority.jl")
 include("3_add_management_areas.jl")
