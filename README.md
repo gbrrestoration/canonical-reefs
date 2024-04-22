@@ -1,6 +1,6 @@
 # Canonical Reefs
 
-Attempt to create a standardized geopackage file including data from:
+Generates a standardized geopackage file including data from:
 
 - Dr A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
   This is referred to as the AC lookup table.
@@ -77,6 +77,9 @@ include("1_create_canonical.jl")
 # Run all scripts
 include("run_all.jl")
 ```
+
+The final outputted file is a geopackage of the form:
+`canonical_gbr_[date scripts were run].gpkg`.
 
 ## Discrepancies
 
@@ -226,3 +229,13 @@ In both CoCoNet and ReefMod, reefs are controlled until annual capacity (based o
 vessels and divers) is fully utilised, starting by selecting randomly from the target reefs,
 then randomly from the priority reefs, and then - if there is spare capacity, which is
 rarely - randomly from the non-priority.
+
+### Depth Quality Control flags
+
+Slight mismatches exist between GBRMPA bathymetry data and the reef features.
+
+The `depth_qc` attribute values indicate:
+
+- 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
+- 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
+- 2 : flags that the minimum value was above sea level (no changes/adjustments made)
