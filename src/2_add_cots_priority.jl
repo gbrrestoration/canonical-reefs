@@ -35,9 +35,9 @@ save(joinpath(OUTPUT_DIR, "rrap_cots_data_mismatching_locations_$(today()).png")
 
 # Format output data.
 RRAP_lookup = select!(RRAP_lookup, Not(:cots_LON, :cots_LAT))
-rename!(RRAP_lookup, Dict(:priority=>:cots_priority))
-RRAP_lookup.cots_priority .= ifelse.(ismissing.(RRAP_lookup.cots_priority), "NA", RRAP_lookup.cots_priority)
-RRAP_lookup.cots_priority = convert.(String, RRAP_lookup.cots_priority)
+rename!(RRAP_lookup, Dict(:priority=>:COTS_priority))
+RRAP_lookup.COTS_priority .= ifelse.(ismissing.(RRAP_lookup.COTS_priority), "NA", RRAP_lookup.COTS_priority)
+RRAP_lookup.COTS_priority = convert.(String, RRAP_lookup.COTS_priority)
 
 # Replace canonical file with updated data
 GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
