@@ -83,7 +83,8 @@ for reg in REGIONS
             if (err isa MethodError) || (err isa ArgumentError)
                 # Raises MethodError when `target_geoms` is empty
                 # Raises ArgumentError where `zonal()` produces `Missing` (no data)
-                msg = "MethodError or ArgumentError on $(id) - likely a feature with no overlap"
+                msg = "MethodError or ArgumentError on $(id)\n"
+                msg = msg * "Possibly a reef feature with no overlapping polygon"
                 @info msg collect(gdf[id, [:UNIQUE_ID, :reef_name]])
                 errored_empty[id] = 1
                 continue
