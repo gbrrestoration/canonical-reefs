@@ -2,7 +2,7 @@
 
 Attempt to create a standardized geopackage file including data from:
 
-- A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
+- Dr A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
   This is referred to as the AC lookup table.
 - `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
 - GBRMPA Reef Feature dataset:
@@ -22,12 +22,15 @@ Attempt to create a standardized geopackage file including data from:
   - https://fed.dcceew.gov.au/datasets/75c48afce3bb445f9ce58633467e21ed_0/explore
 - Indigenous Land Use Agreements:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
+- Satellite-derived Bathymetry data at 10m resolution
+  - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
 
 The entry for the GBRMPA Reef feature list (see link above) states that it has been updated
-in 2023-08-16. Therefore, I assume those IDs are the most correct ones and default to those.
+in 2023-08-16. Therefore, it is assumed these IDs are the most recent and up to date, and
+are used as the default if any issues arise.
 
 ## Project Layout
 
@@ -36,8 +39,8 @@ Assumes `src` is the project root. Each file in `src` is expected to be run in o
 ```code
 GBR-FeatureAnalysis/
 ├─ src/          # Analysis
-├─ data/         # data used to create canonical dataset
-├─ output/       # results
+├─ data/         # Data used to create canonical dataset
+├─ output/       # Results
 ├─ .gitignore
 ├─ Project.toml  # Julia project spec
 ├─ LICENSE.md
@@ -46,13 +49,13 @@ GBR-FeatureAnalysis/
 
 ## Setup
 
-The location of project-specific datasets need to be defined by creating a `.config.toml`
-file inside the `src` directory. The options set in this file is unique to each user, and
-should not be committed to the repository.
+The location of project-specific datasets, specifically, the bathymetry data, needs to be
+defined by creating a `.config.toml` file inside the `src` directory. The options set in
+this file is unique to each user, and should not be committed to the repository.
 
 ```TOML
 [bathy]
-BATHY_DATA_DIR = "path to bathymetry data"  # location of larger raster datasets
+BATHY_DATA_DIR = "path to bathymetry data"  # location of bathymetry raster datasets
 ```
 
 Otherwise, follow the usual Julia setup process.
