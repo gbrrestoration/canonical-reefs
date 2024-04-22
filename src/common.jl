@@ -18,6 +18,7 @@ import ArchGDAL as AG
 # Define constants for script
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
+DATE_FORMAT = "YYYY-mm-dd-THH-MM-SS"
 
 function _convert_plottable(gdf::Union{DataFrame, DataFrameRow}, geom_col::Symbol)
     local plottable
