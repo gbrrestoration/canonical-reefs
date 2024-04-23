@@ -12,8 +12,8 @@ RRAP_IPA_zones = find_intersections(RRAP_lookup, IPA_zones, :GBRMPA_ID, :NAME, :
 RRAP_lookup = leftjoin(RRAP_lookup, RRAP_IPA_zones, on=:GBRMPA_ID, matchmissing=:notequal, order=:left)
 
 # Format for data output.
-rename!(RRAP_lookup, Dict(:area_ID=>:Indigenous_Protected_Area))
-RRAP_lookup.Indigenous_Protected_Area .= ifelse.(ismissing.(RRAP_lookup.Indigenous_Protected_Area), "NA", RRAP_lookup.Indigenous_Protected_Area)
-RRAP_lookup.Indigenous_Protected_Area = convert.(String, RRAP_lookup.Indigenous_Protected_Area)
+rename!(RRAP_lookup, Dict(:area_ID=>:indigenous_protected_area))
+RRAP_lookup.indigenous_protected_area .= ifelse.(ismissing.(RRAP_lookup.indigenous_protected_area), "NA", RRAP_lookup.indigenous_protected_area)
+RRAP_lookup.indigenous_protected_area = convert.(String, RRAP_lookup.indigenous_protected_area)
 
 GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))

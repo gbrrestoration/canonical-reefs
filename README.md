@@ -1,11 +1,8 @@
 # Canonical Reefs
 
-Attempt to create a standardized geopackage file including data from:
+Generates a standardized geopackage file including data from:
 
-- `reefmod_gbr.gpkg` created from a combination of a shapefile found on Teams which provides
-  the reef polygons and ReefMod id list CSV (see entry below).
-  - This should be updated with a known canonical copy of the GBRMPA Reef Feature dataset
-- A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
+- Dr A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
   This is referred to as the AC lookup table.
 - `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
 - GBRMPA Reef Feature dataset:
@@ -25,12 +22,15 @@ Attempt to create a standardized geopackage file including data from:
   - https://fed.dcceew.gov.au/datasets/75c48afce3bb445f9ce58633467e21ed_0/explore
 - Indigenous Land Use Agreements:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
+- Satellite-derived Bathymetry data at 10m resolution
+  - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
 
 The entry for the GBRMPA Reef feature list (see link above) states that it has been updated
-in 2023-08-16. Therefore, I assume those IDs are the most correct ones and default to those.
+in 2023-08-16. Therefore, it is assumed these IDs are the most recent and up to date, and
+are used as the default if any issues arise.
 
 ## Project Layout
 
@@ -39,8 +39,8 @@ Assumes `src` is the project root. Each file in `src` is expected to be run in o
 ```code
 GBR-FeatureAnalysis/
 ├─ src/          # Analysis
-├─ data/         # data used to create canonical dataset
-├─ output/       # results
+├─ data/         # Data used to create canonical dataset
+├─ output/       # Results
 ├─ .gitignore
 ├─ Project.toml  # Julia project spec
 ├─ LICENSE.md
@@ -49,7 +49,16 @@ GBR-FeatureAnalysis/
 
 ## Setup
 
-Usual Julia setup.
+The location of project-specific datasets, specifically, the bathymetry data, needs to be
+defined by creating a `.config.toml` file inside the `src` directory. The options set in
+this file is unique to each user, and should not be committed to the repository.
+
+```TOML
+[bathy]
+BATHY_DATA_DIR = "path to bathymetry data"  # location of bathymetry raster datasets
+```
+
+Otherwise, follow the usual Julia setup process.
 
 ```bash
 $ julia --project=.
@@ -59,10 +68,18 @@ $ julia --project=.
 # Instantiate project and switch to src directory
 ]instantiate
 ;cd src
+```
 
+```julia
 # Run first script
 include("1_create_canonical.jl")
+
+# Run all scripts
+include("run_all.jl")
 ```
+
+The final outputted file is a geopackage of the form:
+`canonical_gbr_[date scripts were run].gpkg`.
 
 ## Discrepancies
 
@@ -100,21 +117,21 @@ count(ac_lookup.UNIQUE_ID .∈ [rme_features.UNIQUE_ID])
 
 ## Resolving discrepancies
 
-To resolve the above, I have:
+To resolve the above:
 
-1. Match reefs by their UNIQUE IDs between RME and GBRMPA datasets
-2. Find the discrepancies between the two
+1. Reefs are matched by their UNIQUE IDs between RME and GBRMPA datasets
+2. Determine the discrepancies between the two
 3. Confirm the discrepancies between RME and GBRMPA datasets are the same as the ones
    reported above
-4. Replace the older IDs with the new ones.
+4. Replace the older IDs with the new updated IDs.
 5. Copy the spatial geometries from the GBRMPA feature set
 6. Reorder the dataframe based on the order given by AC lookup table (which should be
    identical to the RME features)
-7. The AC lookup table and RME datasets ostensibly match by row order, so I copy columns
-   of interest on that basis.
+7. The AC lookup table and RME datasets ostensibly match by row order, columns of interest
+   are copied on that basis.
 
 **In conversation with YM. Bozec, A. Cresswell, and M. Puotinen, there are several other
-issues not yet accounted for (to be detailed once all info has been collated).**
+issues yet to be accounted for (to be detailed once all info has been collated).**
 
 ## Relevant details
 
@@ -153,8 +170,12 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 
 ## Adding Additional Data
 
-The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`. The setup script (`1_create_canonical.jl`) must be run before the following scripts. These scripts make use of the `find_intersections` function from `common.jl`. Each script saves to the same file: `rrap_shared_lookup.gpkg`
-- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef. 
+The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`.
+The setup script (`1_create_canonical.jl`) must be run before the following scripts.
+These scripts make use of the `find_intersections()` function defined in `common.jl`.
+Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
+
+- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef.
 - `3_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
 - `4_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
 - `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
@@ -162,3 +183,58 @@ The following scripts add data to the initial .gpkg created by `1_create_canonic
 - `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
 - `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
+- `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data
+
+## Notes on feature attributes
+
+### UNIQUE IDs
+
+There needs to be a unique identifier so that all models can link their conceptualizations
+of a "reef" back to a common dataset. In Relational Databases this is known as a
+"Primary Key". Reef names should not be relied on as there are many "reefs" with
+(near-)identical or duplicate names. For example, 57.2% of reefs share the name "U/N Reef".
+
+Unfortunately, due to slight changes over time including updated processing workflows,
+revisions by external orgs, and/or changes to definitions of what a "reef" is, the assigned
+`UNIQUE_ID` no longer match.
+
+To allow cross-comparison and validation, the following IDs are included:
+
+- `UNIQUE_ID` : From the most recent GBRMPA reef feature dataset
+- `RME_UNIQUE_ID` : Taken from the most recent ReefMod Engine reef list file
+- `GBRMPA_ID` : An alternate reef id list maintained by GBRMPA (e.g., "10-330", ""10-318a")
+- `RME_GBRMPA_ID` : As above, but as defined by the ReefMod Engine reef list file
+- `LTMP_ID` : A seven character ID largely following the `GBRMPA_ID` format maintained by AIMS for the Long-Term Monitoring Program
+- `LON` and `LAT` : Pre-determined longitude and latitudes from GBRMPA reef feature set
+- `reef_name` : Name of reef (with GBRMPA_ID included in parenthesis)
+
+Additionally, **all attribute names are standardized to follow `snake_case` formatting**, except
+in cases where:
+
+- Pre-existing naming convention (e.g., `UNIQUE_ID`)
+- An established acronym exists (e.g., `TUMRA`, `GBRMPA`, `LTMP`, etc.)
+
+### COTS Priority reefs
+
+Paraphrasing details from Dr S. Condie (pers comm. Thu 2024-03-28 14:23).
+
+GBRMPA classifies reefs as:
+
+- T = target
+- P = priority
+- N = non-priority
+
+In both CoCoNet and ReefMod, reefs are controlled until annual capacity (based on number of
+vessels and divers) is fully utilised, starting by selecting randomly from the target reefs,
+then randomly from the priority reefs, and then - if there is spare capacity, which is
+rarely - randomly from the non-priority.
+
+### Depth Quality Control flags
+
+Slight mismatches exist between GBRMPA bathymetry data and the reef features.
+
+The `depth_qc` attribute values indicate:
+
+- 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
+- 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
+- 2 : flags that the minimum value was above sea level (no changes/adjustments made)
