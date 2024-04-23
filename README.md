@@ -206,13 +206,13 @@ To allow cross-comparison and validation, the following IDs are included:
 - `RME_GBRMPA_ID` : As above, but as defined by the ReefMod Engine reef list file
 - `LTMP_ID` : A seven character ID largely following the `GBRMPA_ID` format maintained by AIMS for the Long-Term Monitoring Program
 - `LON` and `LAT` : Pre-determined longitude and latitudes from GBRMPA reef feature set
-- `reef_name`
+- `reef_name` : Name of reef (with GBRMPA_ID included in parenthesis)
 
 Additionally, **all attribute names are standardized to follow `snake_case` formatting**, except
 in cases where:
 
 - Pre-existing naming convention (e.g., `UNIQUE_ID`)
-- An established acronym exists (`TUMRA`, `GBRMPA`, `LTMP`, `COTS`, `EcoRRAP`)
+- An established acronym exists (e.g., `TUMRA`, `GBRMPA`, `LTMP`, etc.)
 
 ### COTS Priority reefs
 
