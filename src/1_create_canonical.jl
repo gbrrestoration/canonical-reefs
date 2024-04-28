@@ -112,7 +112,9 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 # (GeoDataFrames cannot handle these automatically yet)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
-output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID) #edit incorrect GBRMPA_ID
+
+# Correct incorrect GBRMPA_ID to match cots_priority data
+output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID)
 
 # Save geopackage
 GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=GFT.EPSG(4326))
