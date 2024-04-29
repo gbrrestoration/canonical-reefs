@@ -23,8 +23,8 @@ gbr_features = GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_F
 # and turn Pascal case to snake case, use lower case where appropriate, etc.
 # Have to do this in two steps as the Dictionary types have to be the same
 # i.e., cannot mix string and symbols keys
-rename!(ac_lookup, Dict("Cscape cluster"=>:cscape_cluster))
-rename!(ac_lookup, Dict(:Tempgrowth=>:temp_growth, :LTMP_reef=>:is_LTMP_reef))
+rename!(ac_lookup, Dict("Cscape cluster" => :cscape_cluster))
+rename!(ac_lookup, Dict(:Tempgrowth => :temp_growth, :LTMP_reef => :is_LTMP_reef))
 
 # Find UNIQUE IDs in RME dataset that do not appear in GBRMPA dataset
 mismatched_unique = findall(.!(rme_features.UNIQUE_ID .∈ [gbr_features.UNIQUE_ID]))
@@ -35,11 +35,11 @@ mismatched_unique = findall(.!(rme_features.UNIQUE_ID .∈ [gbr_features.UNIQUE_
 # These missing ones are the same as noted above by their LTMP IDs
 # These will be replaced with the revised IDs
 updated_ID_mapping = Dict(
-    "10-441"=>"11-325",
-    "11-288"=>"11-244e",
-    "11-303"=>"11-244f",
-    "11-310"=>"11-244g",
-    "11-311"=>"11-244h",
+    "10-441" => "11-325",
+    "11-288" => "11-244e",
+    "11-303" => "11-244f",
+    "11-310" => "11-244g",
+    "11-311" => "11-244h",
 )
 
 matching_reefs = gbr_features.UNIQUE_ID .∈ Ref(rme_features.UNIQUE_ID)
@@ -47,7 +47,7 @@ matching_UNIQUE_IDs = gbr_features[matching_reefs, :UNIQUE_ID]
 gbr_matched = gbr_features[matching_reefs, :]
 
 # Add the five missing reefs
-gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID .∈ Ref(values(updated_ID_mapping)), :])
+gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values(updated_ID_mapping)), :])
 
 # Find and add the relevant IDs for the missing reefs
 updated_idx = rme_features.LABEL_ID .∈ Ref(keys(updated_ID_mapping))
@@ -79,7 +79,7 @@ ac_lookup[:, :UNIQUE_ID] = rme_features.UNIQUE_ID
 matching_order = reduce(
     vcat,
     [findall(rme_uid -> rme_uid == ac_uid, output_features.RME_UNIQUE_ID)
-        for ac_uid in ac_lookup.UNIQUE_ID]
+     for ac_uid in ac_lookup.UNIQUE_ID]
 )
 
 # Reorder to match AC lookup
@@ -90,11 +90,11 @@ output_features = output_features[matching_order, :]
 rename!(
     output_features,
     Dict(
-        :LABEL_ID=>:GBRMPA_ID,
-        :X_LABEL=>:LTMP_ID,
-        :LOC_NAME_S=>:reef_name,
-        :X_COORD=>:LON,
-        :Y_COORD=>:LAT
+        :LABEL_ID => :GBRMPA_ID,
+        :X_LABEL => :LTMP_ID,
+        :LOC_NAME_S => :reef_name,
+        :X_COORD => :LON,
+        :Y_COORD => :LAT
     )
 )
 
@@ -112,6 +112,9 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 # (GeoDataFrames cannot handle these automatically yet)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
+
+# Correct incorrect GBRMPA_ID to match cots_priority data
+output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID)
 
 # Save geopackage
 GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=GFT.EPSG(4326))
