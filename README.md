@@ -238,3 +238,9 @@ The `depth_qc` attribute values indicate:
 - 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
 - 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
 - 2 : flags that the minimum value was above sea level (no changes/adjustments made)
+
+### Coordinate Reference Systems
+
+`1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
+canoical dataset. These features have a crs EPSG:4283 (GDA1994). These features are then
+reprojected to have crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
