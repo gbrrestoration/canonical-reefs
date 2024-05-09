@@ -22,4 +22,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:Indigenous_Land_Use_Agreement))
 RRAP_lookup.Indigenous_Land_Use_Agreement .= ifelse.(ismissing.(RRAP_lookup.Indigenous_Land_Use_Agreement), "NA", RRAP_lookup.Indigenous_Land_Use_Agreement)
 RRAP_lookup.Indigenous_Land_Use_Agreement = convert.(String, RRAP_lookup.Indigenous_Land_Use_Agreement)
 
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(7844))

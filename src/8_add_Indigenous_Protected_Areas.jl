@@ -16,4 +16,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:indigenous_protected_area))
 RRAP_lookup.indigenous_protected_area .= ifelse.(ismissing.(RRAP_lookup.indigenous_protected_area), "NA", RRAP_lookup.indigenous_protected_area)
 RRAP_lookup.indigenous_protected_area = convert.(String, RRAP_lookup.indigenous_protected_area)
 
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(7844))

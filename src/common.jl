@@ -17,6 +17,7 @@ using
 import GeoDataFrames as GDF
 import GeoFormatTypes as GFT
 import ArchGDAL as AG
+import GeoInterface as GI
 
 # Define constants for script
 DATA_DIR = "../data"

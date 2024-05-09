@@ -117,7 +117,7 @@ output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String
 output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID)
 
 # Reproject output_features from GDA94 EPSG4283 to GDA2020 EPSG7844 to match GBRMPA geohub data
-output_features.geometry = AG.reproject(output_features.geometry, crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
+output_features.geometry = AG.reproject(output_features.geometry, GI.crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
 
 # Save geopackage
 GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=GFT.EPSG(7844))
