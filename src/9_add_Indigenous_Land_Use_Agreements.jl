@@ -13,6 +13,9 @@ canonical_file = find_latest_file(OUTPUT_DIR)
 RRAP_lookup = GDF.read(canonical_file)
 ILUA_zones = GDF.read(joinpath(DATA_DIR, "Indigenous_Land_Use_Agreements.geojson"))
 
+# Reproject indigenous land use agreement zones to EPSG:7844 (GDA2020) to match RRAP_lookup
+ILUA_zones.geometry = AG.reproject(ILUA_zones.geometry, GI.crs(ILUA_zones[1,:geometry]), EPSG(7844); order=:trad)
+
 # Find intersections and join to RRAP_lookup.
 RRAP_ILUA_zones = find_intersections(RRAP_lookup, ILUA_zones, :GBRMPA_ID, :NAME, :geometry)
 RRAP_lookup = leftjoin(RRAP_lookup, RRAP_ILUA_zones, on=:GBRMPA_ID, matchmissing=:notequal, order=:left)
