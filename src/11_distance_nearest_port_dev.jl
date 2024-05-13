@@ -2,7 +2,7 @@ using Distances
 
 include("common.jl")
 
-Ports = GDF.read("c:/Users/bgrier/Documents/QLD_ports_mercator_via_MP/ports_QLD_merc.shp")
+Ports = GDF.read(joinpath(PORTS_DATA_DIR, "ports_QLD_merc.shp"))
 canonical_file = find_latest_file(OUTPUT_DIR)
 RRAP_lookup = GDF.read(canonical_file)
 

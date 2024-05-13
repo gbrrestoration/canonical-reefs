@@ -56,6 +56,9 @@ this file is unique to each user, and should not be committed to the repository.
 ```TOML
 [bathy]
 BATHY_DATA_DIR = "path to bathymetry data"  # location of bathymetry raster datasets
+
+[ports]
+PORTS_DATA_DIR = "path to port data" # location of port shapefile dataset
 ```
 
 Otherwise, follow the usual Julia setup process.

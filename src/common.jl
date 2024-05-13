@@ -29,6 +29,7 @@ BATHY_DATA_DIR = ""
 try
     global CONFIG = TOML.parsefile("./.config.toml")
     global BATHY_DATA_DIR = CONFIG["bathy"]["BATHY_DATA_DIR"]
+    global PORTS_DATA_DIR = CONFIG["ports"]["PORTS_DATA_DIR"]
 catch
     @warn "No configuration file found!"
 end
