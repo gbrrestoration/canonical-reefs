@@ -14,9 +14,8 @@ RRAP_lookup[:, :min_port_distance] .= 0.0
 #returns the closest port and the distance - in metres (using Haversine distance)
 for reef in eachrow(RRAP_lookup)
     distances = AG.distance.([reef.geometry], Ports.geometry)
-    closest_port = Ports[argmin(distances), :Name]
+    closest_port, port_point = Ports[argmin(distances), [:Name, :geometry]]
 
-    port_point = Ports[argmin(distances), :geometry]
     port_point = (AG.getx(port_point, 0), AG.gety(port_point, 0))
     reef_centre = AG.centroid(reef.geometry)
     reef_centre = (AG.getx(reef_centre, 0), AG.gety(reef_centre, 0))
