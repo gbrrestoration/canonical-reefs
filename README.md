@@ -246,5 +246,5 @@ The `depth_qc` attribute values indicate:
 ### Coordinate Reference Systems
 
 `1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
-canoical dataset. These features have a crs EPSG:4283 (GDA1994). These features are then
-reprojected to have crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
+canoical dataset. These features are in crs EPSG:4283 (GDA1994). These features are then
+reprojected to be in crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
