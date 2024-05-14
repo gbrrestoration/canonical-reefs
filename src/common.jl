@@ -111,7 +111,7 @@ end
 
 function plot_map(Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
     f = Figure(; size=(600, 900))
-    ga = GeoAxis(
+    ga = f[1,1] = GeoAxis(
         f[1,1];
         dest="+proj=latlong +datum=WGS84",
         xlabel="Longitude",
@@ -127,12 +127,27 @@ function plot_map(Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry, co
 
     plottable = _convert_plottable(gdf, geom_col)
 
+    # Define the unique colors and names for each level of factor color_by
     palette = ColorSchemes.tableau_20.colors
     color_indices = groupindices(groupby(gdf, color_by))
+    names = unique(DataFrame(indices = color_indices, names = gdf[:, color_by]))
 
-    poly!(ga, plottable, color = palette[color_indices])
+    # Create the unique legend entries for each level of color_by
+    unique_names = unique(names.names)
+    legend_entries = []
+    for name in eachrow(names)
+        ST = palette[name.indices]
+        LE = PolyElement(;color = ST)
+        push!(legend_entries, [LE])
+    end
 
-    axislegend()
+    legend_entries = Dict(zip(unique_names, legend_entries))
+
+    polys = poly!(ga, plottable, color = palette[color_indices])
+
+    Legend(f[2,1], collect(values(legend_entries)), collect(keys(legend_entries)), nbanks = 2,
+    tellheight = true, tellwidth = false, orientation = :horizontal, labelsize = 10)
+
     display(f)
 end
 
