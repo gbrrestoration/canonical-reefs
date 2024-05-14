@@ -21,4 +21,4 @@ RRAP_lookup.TUMRA_name = convert.(String, RRAP_lookup.TUMRA_name)
 RRAP_lookup.TUMRA_entity .= ifelse.(ismissing.(RRAP_lookup.TUMRA_entity), "NA", RRAP_lookup.TUMRA_entity)
 RRAP_lookup.TUMRA_entity = convert.(String, RRAP_lookup.TUMRA_entity)
 
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(7844))
+GDF.write(canonical_file, RRAP_lookup; crs=CRS)

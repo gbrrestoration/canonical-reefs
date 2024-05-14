@@ -120,7 +120,7 @@ output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20
 output_features.geometry = AG.reproject(output_features.geometry, GI.crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
 
 # Save geopackage
-GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=GFT.EPSG(7844))
+GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT)).gpkg"), output_features; crs=CRS)
 
 # Save copy of map
 f, ga = plot_map(output_features)
