@@ -184,7 +184,7 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
 - `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
-- `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in metres using Haversine distance).
+- `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
 
 ## Notes on feature attributes
 
