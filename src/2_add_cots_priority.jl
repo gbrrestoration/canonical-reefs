@@ -40,4 +40,4 @@ RRAP_lookup.COTS_priority .= ifelse.(ismissing.(RRAP_lookup.COTS_priority), "NA"
 RRAP_lookup.COTS_priority = convert.(String, RRAP_lookup.COTS_priority)
 
 # Replace canonical file with updated data
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)

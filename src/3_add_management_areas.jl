@@ -16,4 +16,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:management_area))
 RRAP_lookup.management_area .= ifelse.(ismissing.(RRAP_lookup.management_area), "NA", RRAP_lookup.management_area)
 RRAP_lookup.management_area = convert.(String, RRAP_lookup.management_area)
 
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)

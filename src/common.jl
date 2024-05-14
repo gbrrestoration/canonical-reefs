@@ -14,14 +14,17 @@ using
     Statistics,
     Bootstrap
 
+using Rasters
 import GeoDataFrames as GDF
 import GeoFormatTypes as GFT
 import ArchGDAL as AG
+import GeoInterface as GI
 
 # Define constants for script
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
 DATE_FORMAT = "YYYY-mm-dd-THH-MM-SS"
+GBRMPA_CRS = GFT.EPSG(7844)
 
 CONFIG = Dict()
 BATHY_DATA_DIR = ""

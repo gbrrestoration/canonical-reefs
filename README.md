@@ -183,7 +183,8 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
 - `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
-- `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data
+- `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
+- `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
 
 ## Notes on feature attributes
 
@@ -238,3 +239,9 @@ The `depth_qc` attribute values indicate:
 - 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
 - 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
 - 2 : flags that the minimum value was above sea level (no changes/adjustments made)
+
+### Coordinate Reference Systems
+
+`1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
+canoical dataset. These features are in crs EPSG:4283 (GDA1994). These features are then
+reprojected to be in crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.

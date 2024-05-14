@@ -7,6 +7,9 @@ canonical_file = find_latest_file(OUTPUT_DIR)
 RRAP_lookup = GDF.read(canonical_file)
 IPA_zones = GDF.read(joinpath(DATA_DIR, "Indigenous_Protected_Areas_-_Dedicated.geojson"))
 
+# Reproject indigenous protected area zones to EPSG:7844 (GDA2020) to match RRAP_lookup
+IPA_zones.geometry = AG.reproject(IPA_zones.geometry, GI.crs(IPA_zones[1,:geometry]), EPSG(7844); order=:trad)
+
 # Find intersections and join to RRAP_lookup.
 RRAP_IPA_zones = find_intersections(RRAP_lookup, IPA_zones, :GBRMPA_ID, :NAME, :geometry)
 RRAP_lookup = leftjoin(RRAP_lookup, RRAP_IPA_zones, on=:GBRMPA_ID, matchmissing=:notequal, order=:left)
@@ -16,4 +19,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:indigenous_protected_area))
 RRAP_lookup.indigenous_protected_area .= ifelse.(ismissing.(RRAP_lookup.indigenous_protected_area), "NA", RRAP_lookup.indigenous_protected_area)
 RRAP_lookup.indigenous_protected_area = convert.(String, RRAP_lookup.indigenous_protected_area)
 
-GDF.write(canonical_file, RRAP_lookup; crs=GFT.EPSG(4326))
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)
