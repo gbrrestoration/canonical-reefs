@@ -17,4 +17,4 @@ rename!(RRAP_lookup, Dict(:area_ID=>:designated_shipping_area))
 RRAP_lookup.designated_shipping_area .= ifelse.(ismissing.(RRAP_lookup.designated_shipping_area), "NA", RRAP_lookup.designated_shipping_area)
 RRAP_lookup.designated_shipping_area = convert.(String, RRAP_lookup.designated_shipping_area)
 
-GDF.write(canonical_file, RRAP_lookup; crs=CRS)
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)

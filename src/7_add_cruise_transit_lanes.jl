@@ -20,4 +20,4 @@ RRAP_lookup.cruise_transit_lane = convert.(String, RRAP_lookup.cruise_transit_la
 RRAP_lookup.cruise_transit_notes .= ifelse.(ismissing.(RRAP_lookup.cruise_transit_notes), "NA", RRAP_lookup.cruise_transit_notes)
 RRAP_lookup.cruise_transit_notes = convert.(String, RRAP_lookup.cruise_transit_notes)
 
-GDF.write(canonical_file, RRAP_lookup; crs=CRS)
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)

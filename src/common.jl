@@ -24,7 +24,7 @@ import GeoInterface as GI
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
 DATE_FORMAT = "YYYY-mm-dd-THH-MM-SS"
-CRS = GFT.EPSG(7844)
+GBRMPA_CRS = GFT.EPSG(7844)
 
 CONFIG = Dict()
 BATHY_DATA_DIR = ""

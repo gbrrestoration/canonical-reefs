@@ -25,4 +25,4 @@ for reef in eachrow(RRAP_lookup)
     reef[:min_port_distance] = min_dist
 end
 
-GDF.write(canonical_file, RRAP_lookup; crs=CRS)
+GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)

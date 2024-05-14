@@ -115,4 +115,4 @@ insertcols!(
 gdf[!, [:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std]] = depths
 gdf[!, :depth_qc] .= errored_empty
 
-GDF.write(canonical_file, gdf; geom_columns=(:geometry, ), crs=CRS)
+GDF.write(canonical_file, gdf; geom_columns=(:geometry, ), crs=GBRMPA_CRS)
