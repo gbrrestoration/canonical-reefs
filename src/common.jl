@@ -8,7 +8,8 @@ using
 
 using
     GLMakie,
-    GeoMakie
+    GeoMakie,
+    ColorSchemes
 
 using
     Statistics,
@@ -127,8 +128,15 @@ function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry
 
     plottable = _convert_plottable(gdf, geom_col)
 
-    # Define the unique colors and names for each level of factor color_by
-    palette = ColorSchemes.tableau_20.colors
+    # Define the unique colors and names for each level of factor color_by.
+    # Use a different color palette for factors with high numbers of levels
+    # (this palette is not as good for visualisation).
+    if size(unique(gdf[:, color_by]),1) <= 20
+        palette = ColorSchemes.tableau_20.colors
+    else
+        palette = ColorSchemes.flag_ec.colors
+    end
+
     color_indices = groupindices(groupby(gdf, color_by))
     names = unique(DataFrame(indices=color_indices, names=gdf[:, color_by]))
 
@@ -145,8 +153,8 @@ function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry
 
     polys = poly!(ga, plottable, color=palette[color_indices])
 
-    Legend(f[2, 1], collect(values(legend_entries)), collect(keys(legend_entries)), nbanks=2,
-        tellheight=true, tellwidth=false, orientation=:horizontal, labelsize=10, patchsize=10)
+    Legend(f[2, 1], collect(values(legend_entries)), collect(keys(legend_entries)), nbanks=3,
+        tellheight=true, tellwidth=false, orientation=:horizontal, labelsize=10)
 
     display(f)
 end
