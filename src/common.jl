@@ -110,7 +110,7 @@ function plot_map!(gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
     return plot_map!(current_axis(), gdf; geom_col=geom_col, color=color)
 end
 
-function plot_map(Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
+function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
     f = Figure(; size=(600, 900))
     ga = f[1, 1] = GeoAxis(
         f[1, 1];
