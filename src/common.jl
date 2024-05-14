@@ -36,7 +36,7 @@ catch
     @warn "No configuration file found!"
 end
 
-function _convert_plottable(gdf::Union{DataFrame, DataFrameRow}, geom_col::Symbol)
+function _convert_plottable(gdf::Union{DataFrame,DataFrameRow}, geom_col::Symbol)
     local plottable
     try
         if gdf isa DataFrame
@@ -66,10 +66,10 @@ Convenience plot function.
 - `geom_col` : Column name holding geometries to plot
 - `color_by` : Column name holding factor to color reefs by (e.g. :management_area)
 """
-function plot_map(gdf::Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry)
+function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry)
     f = Figure(; size=(600, 900))
     ga = GeoAxis(
-        f[1,1];
+        f[1, 1];
         dest="+proj=latlong +datum=WGS84",
         xlabel="Longitude",
         ylabel="Latitude",
@@ -110,10 +110,10 @@ function plot_map!(gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
     return plot_map!(current_axis(), gdf; geom_col=geom_col, color=color)
 end
 
-function plot_map(Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
+function plot_map(Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
     f = Figure(; size=(600, 900))
-    ga = f[1,1] = GeoAxis(
-        f[1,1];
+    ga = f[1, 1] = GeoAxis(
+        f[1, 1];
         dest="+proj=latlong +datum=WGS84",
         xlabel="Longitude",
         ylabel="Latitude",
@@ -131,23 +131,23 @@ function plot_map(Union{DataFrame, DataFrameRow}; geom_col::Symbol=:geometry, co
     # Define the unique colors and names for each level of factor color_by
     palette = ColorSchemes.tableau_20.colors
     color_indices = groupindices(groupby(gdf, color_by))
-    names = unique(DataFrame(indices = color_indices, names = gdf[:, color_by]))
+    names = unique(DataFrame(indices=color_indices, names=gdf[:, color_by]))
 
     # Create the unique legend entries for each level of color_by
     unique_names = unique(names.names)
     legend_entries = []
     for name in eachrow(names)
-        ST = palette[name.indices]
-        LE = PolyElement(;color = ST)
+        col = palette[name.indices]
+        LE = PolyElement(; color=col)
         push!(legend_entries, [LE])
     end
 
     legend_entries = Dict(zip(unique_names, legend_entries))
 
-    polys = poly!(ga, plottable, color = palette[color_indices])
+    polys = poly!(ga, plottable, color=palette[color_indices])
 
-    Legend(f[2,1], collect(values(legend_entries)), collect(keys(legend_entries)), nbanks = 2,
-    tellheight = true, tellwidth = false, orientation = :horizontal, labelsize = 10)
+    Legend(f[2, 1], collect(values(legend_entries)), collect(keys(legend_entries)), nbanks=2,
+        tellheight=true, tellwidth=false, orientation=:horizontal, labelsize=10, patchsize=10)
 
     display(f)
 end
