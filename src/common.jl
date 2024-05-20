@@ -23,6 +23,7 @@ import GeoInterface as GI
 # Define constants for script
 DATA_DIR = "../data"
 OUTPUT_DIR = "../output"
+FIGS_DIR = "../figs"
 DATE_FORMAT = "YYYY-mm-dd-THH-MM-SS"
 GBRMPA_CRS = GFT.EPSG(7844)
 

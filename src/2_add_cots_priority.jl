@@ -31,7 +31,7 @@ spat_mismatch = RRAP_lookup[(findall(skipmissing(.!matching.match_lon))),:]
 reef_plot, ga = plot_map(spat_mismatch)
 scatter!(ga, spat_mismatch.LON, spat_mismatch.LAT, markersize = 8)
 scatter!(ga, spat_mismatch.cots_LON, spat_mismatch.LAT, markersize = 6)
-save(joinpath(OUTPUT_DIR, "rrap_cots_data_mismatching_locations_$(today()).png"), f)
+save(joinpath(FIGS_DIR, "rrap_cots_data_mismatching_locations_$(today()).png"), reef_plot)
 
 # Format output data.
 RRAP_lookup = select!(RRAP_lookup, Not(:cots_LON, :cots_LAT))

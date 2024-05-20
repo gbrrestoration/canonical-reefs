@@ -124,4 +124,4 @@ GDF.write(joinpath(OUTPUT_DIR, "rrap_canonical_$(Dates.format(now(), DATE_FORMAT
 
 # Save copy of map
 f, ga = plot_map(output_features)
-save(joinpath(OUTPUT_DIR, "rrap_mds_reefs_$(today()).png"), f)
+save(joinpath(FIGS_DIR, "rrap_mds_reefs_$(today()).png"), f)
