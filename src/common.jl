@@ -7,9 +7,9 @@ using
     DataFrames
 
 using
-    GLMakie,
+    ColorSchemes,
     GeoMakie,
-    ColorSchemes
+    GLMakie
 
 using
     Statistics,
