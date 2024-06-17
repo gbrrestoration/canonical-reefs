@@ -64,8 +64,8 @@ Convenience plot function.
 
 # Arguments
 - `gdf` : GeoDataFrame
-- `geom_col` : Column name holding geometries to plot
 - `color_by` : Column name holding factor to color reefs by (e.g. :management_area)
+- `geom_col` : Column name holding geometries to plot
 """
 function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry)
     f = Figure(; size=(600, 900))
@@ -111,7 +111,7 @@ function plot_map!(gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
     return plot_map!(current_axis(), gdf; geom_col=geom_col, color=color)
 end
 
-function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
+function plot_map(gdf::Union{DataFrame,DataFrameRow}, color_by::Symbol; geom_col::Symbol=:geometry)
     f = Figure(; size=(600, 900))
     ga = GeoAxis(
         f[1, 1];
@@ -156,6 +156,7 @@ function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry
     tellwidth=false, orientation=:horizontal, labelsize=10)
 
     display(f)
+    return f, ga
 end
 
 """
