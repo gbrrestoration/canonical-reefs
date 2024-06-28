@@ -24,6 +24,8 @@ Generates a standardized geopackage file including data from:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 - Satellite-derived Bathymetry data at 10m resolution
   - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
+- QLD Port Location data
+- EcoRRAP site locations from EcoRRAP team (Maren Toor)
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -185,6 +187,7 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
 - `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
 - `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
+- `12_update_EcoRRAP_locations.jl` : Update reefs that contain EcoRRAP sites to reflect current site list.
 
 ## Notes on feature attributes
 
