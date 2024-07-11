@@ -113,8 +113,9 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
-# Correct incorrect GBRMPA_ID to match cots_priority data
+# Correct incorrect GBRMPA_ID and RME_GBRMPA_ID to match cots_priority data
 output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID)
+output_features.RME_GBRMPA_ID = ifelse.((output_features.RME_GBRMPA_ID .== "20198"), "20-198", output_features.RME_GBRMPA_ID)
 
 # Reproject output_features from GDA94 EPSG4283 to GDA2020 EPSG7844 to match GBRMPA geohub data
 output_features.geometry = AG.reproject(output_features.geometry, GI.crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
