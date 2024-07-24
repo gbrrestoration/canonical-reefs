@@ -24,8 +24,12 @@ Generates a standardized geopackage file including data from:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 - Satellite-derived Bathymetry data at 10m resolution
   - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
+  - Functionality of depth extraction (Script `10_extract_reef_depths.jl`) relies on depth
+  data being in a projection with metre coordinate units.
 - QLD Port Location data
-- EcoRRAP site locations from EcoRRAP team (Maren Toor)
+  - Provided by Dr. Marji Puotinen
+- EcoRRAP site locations from EcoRRAP team
+  - Provided by Dr. Maren Toor
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -235,9 +239,6 @@ rarely - randomly from the non-priority.
 
 ### Depth Data and Quality Control flags
 
-For calculation of pixel size depth raster data should have coordinates in unit metres, not
-degrees.
-
 Raw GBRMPA bathymetry data contains positive values for locations above sea level, and
 negative values for below sea level. In depth statistic calculation for canonical-reefs
 output this has been reversed as ADRIA expects depth values below sea level to be positive.
@@ -255,10 +256,10 @@ The `depth_qc` attribute values indicate:
 ### Coordinate Reference Systems
 
 `1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
-canoical dataset. These features are in crs EPSG:4283 (GDA1994). These features are then
-reprojected to be in crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
+canoical dataset. These features are in CRS EPSG:4283 (GDA1994). These features are then
+reprojected to be in CRS EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
 
-### Possible error reef features
+### Possible error in reef features
 
 The polygon with reef_name U/N Reef (20-553) has a possible error in creation that results
 in the reef being a small polygon located on the edge of Rip Reef (20-0370a).

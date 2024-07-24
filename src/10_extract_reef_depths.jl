@@ -116,17 +116,15 @@ end
 
 # Threads on inner loop (12 threads)
 # 88.003740 seconds (29.41 M allocations: 7.957 GiB, 1.54% gc time, 2.32% compilation time)
-
-depths[errored_empty .> 0, :] .= 7.0  # Set depth vals to ReefMod default value if nothing found.
-depths[errored_empty .> 0, 6] .= 0.0
+errored_empty[depths[:, 6] .< 0.05] .= 3
+depths[errored_empty .> 0, 1:5] .= 7.0  # Set depth vals to ReefMod default value if nothing found.
 
 # Set quality flags:
 # 0 = no error (does not indicate polygons that only partially overlap a target reef!)
 # 1 = no overlap error (value set to 7m)
 # 2 = minimum value above sea level (no change made, just a flag)
-# 3 = raster pixels cover < 5% of the reef polygon area
+# 3 = raster pixels cover < 5% of the reef polygon area (value set to 7m)
 errored_empty[depths[:, 1] .< 0.0] .= 2
-errored_empty[depths[:, 6] .< 0.05] .= 3
 
 gdf = GDF.read(canonical_dataset)
 insertcols!(
