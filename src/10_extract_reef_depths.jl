@@ -40,6 +40,18 @@ region_path = joinpath(
 canonical_dataset = find_latest_file(OUTPUT_DIR)
 gbr_features = GDF.read(canonical_dataset)
 
+# Values are negative so need to flip direction
+# Nominal value are: min, mean, median, max, std
+function summary_func(x, pixel_area, id_area)
+    prop_area = length(collect(x)) * pixel_area / id_area
+
+    if length(collect(x)) > 1
+        return [-maximum(x), -mean(x), -median(x), -minimum(x), std(x), prop_area]
+    else
+        return [-first(x), -first(x), -first(x), -first(x), -first(x), prop_area]
+    end
+end
+
 # Using SharedArrays now as we might move to multi-core processing
 # although using GPUs is an option...
 depths = SharedArray(zeros(Float64, size(gbr_features, 1), 6))
@@ -53,18 +65,6 @@ for reg in REGIONS
 
     res = abs.(step.(dims(src_bathy, (X, Y))))
     pixel_area = res[1] * res[2]
-
-    # Values are negative so need to flip direction
-    # Nominal value are: min, mean, median, max, std
-    function summary_func(x)
-        prop_area = length(unique(x)) * pixel_area / id_area
-
-        if length(unique(x)) > 1
-            return [-maximum(x), -mean(x), -median(x), -minimum(x), std(x), prop_area]
-        else
-            return [-first(x), -first(x), -first(x), -first(x), -first(x), prop_area]
-        end
-    end
 
     proj_str = ProjString(AG.toPROJ4(AG.importWKT(crs(src_bathy).val; order=:compliant)))
 
@@ -91,7 +91,7 @@ for reg in REGIONS
     Threads.@threads for id in feature_match_ids
         id_area = GeometryOps.area(target_geoms[id])
         try
-            depths[id, :] .= zonal(summary_func, src_bathy; of=target_geoms[id])
+            depths[id, :] .= zonal(x -> summary_func(x, pixel_area, id_area), src_bathy; of=target_geoms[id])
         catch err
             if (err isa MethodError) || (err isa ArgumentError)
                 # Raises MethodError when `target_geoms` is empty
@@ -106,26 +106,34 @@ for reg in REGIONS
             @info "Error on $(id)"
             rethrow(err)
         end
+
+        if depths[id, 1] < -5
+            reef = collect(gdf[id, [:UNIQUE_ID, :reef_name]])
+            @warn "$(reef) has a minimum depth value higher than 5m above sea level."
+        end
     end
 end
 
 # Threads on inner loop (12 threads)
 # 88.003740 seconds (29.41 M allocations: 7.957 GiB, 1.54% gc time, 2.32% compilation time)
 
-depths[errored_empty .> 0, :] .= 7.0  # Set to ReefMod default value if nothing found.
+depths[errored_empty .> 0, :] .= 7.0  # Set depth vals to ReefMod default value if nothing found.
+depths[errored_empty .> 0, 6] .= 0.0
 
 # Set quality flags:
 # 0 = no error (does not indicate polygons that only partially overlap a target reef!)
 # 1 = no overlap error (value set to 7m)
 # 2 = minimum value above sea level (no change made, just a flag)
+# 3 = raster pixels cover < 5% of the reef polygon area
 errored_empty[depths[:, 1] .< 0.0] .= 2
+errored_empty[depths[:, 6] .< 0.05] .= 3
 
 gdf = GDF.read(canonical_dataset)
 insertcols!(
     gdf,
-    ([:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_qc] .=> [1,2,3,4,5,6])...
+    ([:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_qc, :depth_rast_prop] .=> [1,2,3,4,5,6,7])...
 )
-gdf[!, [:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std]] = depths
+gdf[!, [:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_rast_prop]] = depths
 gdf[!, :depth_qc] .= errored_empty
 
 GDF.write(canonical_file, gdf; geom_columns=(:geometry, ), crs=GBRMPA_CRS)
