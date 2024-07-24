@@ -233,7 +233,14 @@ vessels and divers) is fully utilised, starting by selecting randomly from the t
 then randomly from the priority reefs, and then - if there is spare capacity, which is
 rarely - randomly from the non-priority.
 
-### Depth Quality Control flags
+### Depth Data and Quality Control flags
+
+For calculation of pixel size depth raster data should have coordinates in unit metres, not
+degrees.
+
+Raw GBRMPA bathymetry data contains positive values for locations above sea level, and
+negative values for below sea level. In depth statistic calculation for canonical-reefs
+output this has been reversed as ADRIA expects depth values below sea level to be positive.
 
 Slight mismatches exist between GBRMPA bathymetry data and the reef features.
 
@@ -242,9 +249,16 @@ The `depth_qc` attribute values indicate:
 - 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
 - 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
 - 2 : flags that the minimum value was above sea level (no changes/adjustments made)
+- 3 : flags that depth raster data used for statistic calculation covers less than
+5% of the polygon reef area
 
 ### Coordinate Reference Systems
 
 `1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
 canoical dataset. These features are in crs EPSG:4283 (GDA1994). These features are then
 reprojected to be in crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
+
+### Possible error reef features
+
+The polygon with reef_name U/N Reef (20-553) has a possible error in creation that results
+in the reef being a small polygon located on the edge of Rip Reef (20-0370a).
