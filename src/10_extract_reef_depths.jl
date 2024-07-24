@@ -20,6 +20,7 @@ using GeoFormatTypes: EPSG
 
 using Rasters
 using SharedArrays
+using GeometryOps
 
 include("common.jl")
 
@@ -39,13 +40,9 @@ region_path = joinpath(
 canonical_dataset = find_latest_file(OUTPUT_DIR)
 gbr_features = GDF.read(canonical_dataset)
 
-# Values are negative so need to flip direction
-# Nominal value are: min, mean, median, max, std
-summary_func(x) = (length(unique(x)) > 1) ? [-maximum(x), -mean(x), -median(x), -minimum(x), std(x)] : first(x)
-
 # Using SharedArrays now as we might move to multi-core processing
 # although using GPUs is an option...
-depths = SharedArray(zeros(Float64, size(gbr_features, 1), 5))
+depths = SharedArray(zeros(Float64, size(gbr_features, 1), 6))
 errored_empty = SharedArray(zeros(Int64, size(gbr_features, 1)))
 
 for reg in REGIONS
@@ -53,6 +50,21 @@ for reg in REGIONS
 
     src_bathy_path = first(glob("*.tif", joinpath(BATHY_DATA_DIR, "bathy", reg)))
     src_bathy = Raster(src_bathy_path, mappedcrs=EPSG(4326), lazy=true)
+
+    res = abs.(step.(dims(src_bathy, (X, Y))))
+    pixel_area = res[1] * res[2]
+
+    # Values are negative so need to flip direction
+    # Nominal value are: min, mean, median, max, std
+    function summary_func(x)
+        prop_area = length(unique(x)) * pixel_area / id_area
+
+        if length(unique(x)) > 1
+            return [-maximum(x), -mean(x), -median(x), -minimum(x), std(x), prop_area]
+        else
+            return [-first(x), -first(x), -first(x), -first(x), -first(x), prop_area]
+        end
+    end
 
     proj_str = ProjString(AG.toPROJ4(AG.importWKT(crs(src_bathy).val; order=:compliant)))
 
@@ -77,6 +89,7 @@ for reg in REGIONS
     feature_match_ids = unique(findall(GDF.intersects.(tgt_region, target_geoms)))
 
     Threads.@threads for id in feature_match_ids
+        id_area = GeometryOps.area(target_geoms[id])
         try
             depths[id, :] .= zonal(summary_func, src_bathy; of=target_geoms[id])
         catch err
