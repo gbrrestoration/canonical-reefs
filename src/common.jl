@@ -67,7 +67,7 @@ Convenience plot function.
 - `geom_col` : Column name holding geometries to plot
 - `color_by` : Column name holding factor to color reefs by (e.g. :management_area)
 """
-function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry)
+function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol=:default)
     f = Figure(; size=(600, 900))
     ga = GeoAxis(
         f[1, 1];
@@ -84,10 +84,39 @@ function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry
     )
 
     plottable = _convert_plottable(gdf, geom_col)
-    poly!(ga, plottable)
+
+    if color_by == :default
+        poly!(ga, plottable)
+
+    else
+        # Define the unique colors and names for each level of factor color_by.
+        # Use a different color palette for factors with high numbers of levels
+        # (this palette is not as good for visualisation).
+        if size(unique(gdf[:, color_by]),1) <= 20
+            palette = ColorSchemes.tableau_20.colors
+        else
+            palette = ColorSchemes.flag_ec.colors
+        end
+
+        color_indices = groupindices(groupby(gdf, color_by))
+        names = unique(DataFrame(indices=color_indices, names=gdf[:, color_by]))
+
+        # Create the unique legend entries for each level of color_by
+        unique_names = names.names
+        legend_entries = []
+        for name in eachrow(names)
+            col = palette[name.indices]
+            LE = PolyElement(; color=col)
+            push!(legend_entries, [LE])
+        end
+
+        polys = poly!(ga, plottable, color=palette[color_indices])
+
+        Legend(f[2, 1], legend_entries, unique_names, nbanks=3, tellheight=true,
+        tellwidth=false, orientation=:horizontal, labelsize=10)
+    end
 
     display(f)
-
     return f, ga
 end
 
@@ -109,53 +138,6 @@ end
 
 function plot_map!(gdf::DataFrame; geom_col=:geometry, color=nothing)::Nothing
     return plot_map!(current_axis(), gdf; geom_col=geom_col, color=color)
-end
-
-function plot_map(gdf::Union{DataFrame,DataFrameRow}; geom_col::Symbol=:geometry, color_by::Symbol)
-    f = Figure(; size=(600, 900))
-    ga = GeoAxis(
-        f[1, 1];
-        dest="+proj=latlong +datum=WGS84",
-        xlabel="Longitude",
-        ylabel="Latitude",
-        xticklabelpad=15,
-        yticklabelpad=40,
-        xticklabelsize=10,
-        yticklabelsize=10,
-        aspect=AxisAspect(0.75),
-        xgridwidth=0.5,
-        ygridwidth=0.5,
-    )
-
-    plottable = _convert_plottable(gdf, geom_col)
-
-    # Define the unique colors and names for each level of factor color_by.
-    # Use a different color palette for factors with high numbers of levels
-    # (this palette is not as good for visualisation).
-    if size(unique(gdf[:, color_by]),1) <= 20
-        palette = ColorSchemes.tableau_20.colors
-    else
-        palette = ColorSchemes.flag_ec.colors
-    end
-
-    color_indices = groupindices(groupby(gdf, color_by))
-    names = unique(DataFrame(indices=color_indices, names=gdf[:, color_by]))
-
-    # Create the unique legend entries for each level of color_by
-    unique_names = names.names
-    legend_entries = []
-    for name in eachrow(names)
-        col = palette[name.indices]
-        LE = PolyElement(; color=col)
-        push!(legend_entries, [LE])
-    end
-
-    polys = poly!(ga, plottable, color=palette[color_indices])
-
-    Legend(f[2, 1], legend_entries, unique_names, nbanks=3, tellheight=true,
-    tellwidth=false, orientation=:horizontal, labelsize=10)
-
-    display(f)
 end
 
 """

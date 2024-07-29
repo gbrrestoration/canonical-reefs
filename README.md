@@ -24,6 +24,12 @@ Generates a standardized geopackage file including data from:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 - Satellite-derived Bathymetry data at 10m resolution
   - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
+  - Functionality of depth extraction (Script `10_extract_reef_depths.jl`) relies on depth
+  data being in a projection with metre coordinate units.
+- QLD Port Location data
+  - Provided by Dr. Marji Puotinen
+- EcoRRAP site locations from EcoRRAP team
+  - Provided by Dr. Maren Toor
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -185,6 +191,7 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
 - `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
 - `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
+- `12_update_EcoRRAP_locations.jl` : Update reefs that contain EcoRRAP sites to reflect current site list.
 
 ## Notes on feature attributes
 
@@ -230,7 +237,11 @@ vessels and divers) is fully utilised, starting by selecting randomly from the t
 then randomly from the priority reefs, and then - if there is spare capacity, which is
 rarely - randomly from the non-priority.
 
-### Depth Quality Control flags
+### Depth Data and Quality Control flags
+
+Raw GBRMPA bathymetry data contains positive values for locations above sea level, and
+negative values for below sea level. In depth statistic calculation for canonical-reefs
+output this has been reversed as ADRIA expects depth values below sea level to be positive.
 
 Slight mismatches exist between GBRMPA bathymetry data and the reef features.
 
@@ -239,9 +250,16 @@ The `depth_qc` attribute values indicate:
 - 0 : no error (does not indicate polygons that only partially overlapped a given reef!)
 - 1 : flags that the reef feature did not overlap any satellite data (value set to 7m)
 - 2 : flags that the minimum value was above sea level (no changes/adjustments made)
+- 3 : flags that depth raster data used for statistic calculation covers less than
+5% of the polygon reef area
 
 ### Coordinate Reference Systems
 
 `1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
-canoical dataset. These features are in crs EPSG:4283 (GDA1994). These features are then
-reprojected to be in crs EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
+canoical dataset. These features are in CRS EPSG:4283 (GDA1994). These features are then
+reprojected to be in CRS EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
+
+### Possible error in reef features
+
+The polygon with reef_name U/N Reef (20-553) has a possible error in creation that results
+in the reef being a small polygon located on the edge of Rip Reef (20-0370a).
