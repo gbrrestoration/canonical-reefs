@@ -90,9 +90,9 @@ The final outputted file is a geopackage of the form:
 ## Discrepancies
 
 Note that ReefMod Engine uses an older version of GBRMPA IDs (see notes in
-`id_list_2023_03_30.csv` and below). I do not know which version is used more generally
-across RRAP but I have made the decision to default to the updated GBRMPA IDs where there
-are any discrepancies.
+`id_list_2023_03_30.csv` and below).
+
+The most recent GBRMPA IDs are used by default where any discrepancies are encountered.
 
 ```code
     # Used in RME   Revised
@@ -103,7 +103,7 @@ are any discrepancies.
     # 11-311        11-244h
 ```
 
-When comparing how many matching IDs are found in each dataset, they never align properly.
+Note that no list of IDs from the datasets described above completely align:
 
 ```julia
 # Expected 100% match is 3806 (the number of reefs represented in ReefMod)
@@ -131,7 +131,7 @@ To resolve the above:
    reported above
 4. Replace the older IDs with the new updated IDs.
 5. Copy the spatial geometries from the GBRMPA feature set
-6. Reorder the dataframe based on the order given by AC lookup table (which should be
+6. Reorder the dataframe based on the order given by AC lookup table (which are
    identical to the RME features)
 7. The AC lookup table and RME datasets ostensibly match by row order, columns of interest
    are copied on that basis.
@@ -261,5 +261,5 @@ reprojected to be in CRS EPSG:7844 (GDA2020) to be consistent with other data fr
 
 ### Possible error in reef features
 
-The polygon with reef_name U/N Reef (20-553) has a possible error in creation that results
-in the reef being a small polygon located on the edge of Rip Reef (20-0370a).
+The polygon with reef_name U/N Reef (20-553) has a possible error in the original data that
+results in the reef being a small polygon located on the edge of Rip Reef (20-0370a).
