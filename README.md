@@ -263,3 +263,12 @@ reprojected to be in CRS EPSG:7844 (GDA2020) to be consistent with other data fr
 
 The polygon with reef_name U/N Reef (20-553) has a possible error in the original data that
 results in the reef being a small polygon located on the edge of Rip Reef (20-0370a).
+
+## Incorrect GBRMPA_ID Identifier
+GBRMPA datsets using GBRMPA_ID (e.g. 20-553) contain an incorrect ID where identifier "20198"
+is missing a hyphen (correct ID: "20-198"). This mistake has been preserved in the output
+geopackage GBRMPA_ID column to match current GBRMPA data (we include this
+ID as "20198"). Other data sources using GBMPRA_ID may have fixed this identifier.
+
+RME_GBRMPA_ID column contains this ID as "20-198" rather than "20198" as this matches the
+latest reef_id set provided by the ReefMod team.
