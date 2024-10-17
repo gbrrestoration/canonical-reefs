@@ -16,4 +16,14 @@ rename!(RRAP_lookup, Dict(:area_ID=>:management_area))
 RRAP_lookup.management_area .= ifelse.(ismissing.(RRAP_lookup.management_area), "NA", RRAP_lookup.management_area)
 RRAP_lookup.management_area = convert.(String, RRAP_lookup.management_area)
 
+# Add short region names used at AIMS
+short_region_names = Dict(
+    "Far Northern Management Area" => "FarNorthern",
+    "Cairns/Cooktown Management Area" => "Cairns-Cooktown",
+    "Townsville/Whitsunday Management Area" => "Townsville-Whitsunday",
+    "Mackay/Capricorn Management Area" => "Mackay-Capricorn",
+    "NA" => "NA"
+)
+RRAP_lookup.management_area_short = [short_region_names[reg] for reg in RRAP_lookup.management_area]
+
 GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)
