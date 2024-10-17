@@ -16,6 +16,7 @@ include("common.jl")
 
 # Load datasets
 ac_lookup = CSV.read(joinpath(DATA_DIR, "GBR_reefs_lookup_table_Anna_update_2024-03-06.csv"), DataFrame, missingstring="NA")
+rme_features = GDF.read(joinpath(DATA_DIR,"reefmod_gbr.gpkg"))
 rme_ids = CSV.read(
     joinpath(DATA_DIR, "id_list_2023_03_30.csv"),
     DataFrame,
@@ -65,6 +66,7 @@ updated_reefs_rme_ids = rme_features[updated_idx, :UNIQUE_ID]
 old_UNIQUE_IDs = vcat(matching_UNIQUE_IDs, updated_reefs_rme_ids)
 
 gbr_matched[!, :RME_UNIQUE_ID] = old_UNIQUE_IDs
+gbr_matched[!, :RME_GBRMPA_ID] = rme_ids.reef_id
 
 # Start copying relevant columns
 cols_of_interest = [:UNIQUE_ID, :LABEL_ID, :X_LABEL, :LOC_NAME_S, :RME_UNIQUE_ID, :RME_GBRMPA_ID]
@@ -119,9 +121,6 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 # (GeoDataFrames cannot handle these automatically yet)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
-
-# Attach the latest version of RME_GBRMPA_IDs as from `id_list_2023_03_30.csv`.
-output_features.RME_GBRMPA_ID = rme_ids.reef_ids
 
 # Convert area in km² to m²
 output_features.ReefMod_area_m2 .= rme_ids[:, :area_km2] .* 1e6
