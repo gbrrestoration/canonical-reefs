@@ -6,7 +6,7 @@ RRAP_lookup = GDF.read(canonical_file)
 cots_priority = CSV.read(joinpath(DATA_DIR, "CoCoNet_CoTS_control_reefs_2024.csv"), DataFrame, missingstring="NA")
 
 # Temporarily fix incorrect GBRMPA_ID to match
-RRAP_lookup.GBRMPA_ID = ifelse.(RRAP_lookup.GBRMPA_ID .== "20198", "20-198", RRAP_lookup.GBRMPA_ID)
+RRAP_lookup.COTS_GBRMPA_ID = ifelse.(RRAP_lookup.GBRMPA_ID .== "20198", "20-198", RRAP_lookup.GBRMPA_ID)
 
 # Format data.
 rename!(
@@ -14,14 +14,14 @@ rename!(
     Dict(
         "LAT"=>:cots_LAT,
         "LON"=>:cots_LON,
-        "ReefID"=>:GBRMPA_ID,
+        "ReefID"=>:COTS_GBRMPA_ID,
         "Priority"=>:priority
         )
     )
-cots_priority = cots_priority[:, [:GBRMPA_ID, :cots_LON, :cots_LAT, :priority]]
+cots_priority = cots_priority[:, [:COTS_GBRMPA_ID, :cots_LON, :cots_LAT, :priority]]
 
 # Adding cots priority into RRAP_lookup.
-RRAP_lookup = leftjoin(RRAP_lookup, cots_priority, on=:GBRMPA_ID, order=:left)
+RRAP_lookup = leftjoin(RRAP_lookup, cots_priority, on=:COTS_GBRMPA_ID, order=:left)
 
 # Cross-checking that the GBRMPA_ID from RRAP_lookup matches from cots_priority (within 100m - rounded values).
 matching = DataFrame(match_lon=[], match_lat=[])
@@ -42,8 +42,5 @@ rename!(RRAP_lookup, Dict(:priority=>:COTS_priority))
 RRAP_lookup.COTS_priority .= ifelse.(ismissing.(RRAP_lookup.COTS_priority), "NA", RRAP_lookup.COTS_priority)
 RRAP_lookup.COTS_priority = convert.(String, RRAP_lookup.COTS_priority)
 
-# Revert incorrect GBRMPA_ID to match data provided by GBRMPA
-RRAP_lookup.GBRMPA_ID = ifelse.(RRAP_lookup.GBRMPA_ID .== "20-198", "20198", RRAP_lookup.GBRMPA_ID)
-
 # Replace canonical file with updated data
-GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)
+GDF.write(canonical_file, select(RRAP_lookup, Not(:COTS_GBRMPA_ID)); crs=GBRMPA_CRS)
