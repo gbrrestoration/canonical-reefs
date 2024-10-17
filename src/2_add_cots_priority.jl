@@ -5,6 +5,9 @@ canonical_file = find_latest_file(OUTPUT_DIR)
 RRAP_lookup = GDF.read(canonical_file)
 cots_priority = CSV.read(joinpath(DATA_DIR, "CoCoNet_CoTS_control_reefs_2024.csv"), DataFrame, missingstring="NA")
 
+# Temporarily fix incorrect GBRMPA_ID to match
+RRAP_lookup.GBRMPA_ID = ifelse.(RRAP_lookup.GBRMPA_ID .== "20198", "20-198", RRAP_lookup.GBRMPA_ID)
+
 # Format data.
 rename!(
     cots_priority,
@@ -38,6 +41,9 @@ RRAP_lookup = select!(RRAP_lookup, Not(:cots_LON, :cots_LAT))
 rename!(RRAP_lookup, Dict(:priority=>:COTS_priority))
 RRAP_lookup.COTS_priority .= ifelse.(ismissing.(RRAP_lookup.COTS_priority), "NA", RRAP_lookup.COTS_priority)
 RRAP_lookup.COTS_priority = convert.(String, RRAP_lookup.COTS_priority)
+
+# Revert incorrect GBRMPA_ID to match data provided by GBRMPA
+RRAP_lookup.GBRMPA_ID = ifelse.(RRAP_lookup.GBRMPA_ID .== "20-198", "20198", RRAP_lookup.GBRMPA_ID)
 
 # Replace canonical file with updated data
 GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)
