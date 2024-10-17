@@ -31,7 +31,7 @@ gbr_features = GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_F
 rename!(ac_lookup, Dict("Cscape cluster" => :cscape_cluster))
 rename!(ac_lookup, Dict(:Tempgrowth => :temp_growth, :LTMP_reef => :is_LTMP_reef))
 
-# attach correct names to rme_ids from id_list_2023_03_30.csv
+# Attach correct names to rme_ids from id_list_2023_03_30.csv
 id_list_names = ["reef_id", "area_km2", "sand_proportion", "shelf_position"]
 rename!(rme_ids, ["Column$(i)" => col_name for (i, col_name) in enumerate(id_list_names)])
 
@@ -62,11 +62,9 @@ gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values
 updated_idx = rme_features.LABEL_ID .∈ Ref(keys(updated_ID_mapping))
 updated_reefs_rme_ids = rme_features[updated_idx, :UNIQUE_ID]
 
-old_LABEL_IDs = vcat(gbr_features[matching_reefs, :LABEL_ID], rme_features[updated_idx, :LABEL_ID])
 old_UNIQUE_IDs = vcat(matching_UNIQUE_IDs, updated_reefs_rme_ids)
 
 gbr_matched[!, :RME_UNIQUE_ID] = old_UNIQUE_IDs
-gbr_matched[!, :RME_GBRMPA_ID] = old_LABEL_IDs
 
 # Start copying relevant columns
 cols_of_interest = [:UNIQUE_ID, :LABEL_ID, :X_LABEL, :LOC_NAME_S, :RME_UNIQUE_ID, :RME_GBRMPA_ID]
@@ -122,8 +120,8 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
-# Correct incorrect RME_GBRMPA_ID to match RME v1.0.33 data
-output_features.RME_GBRMPA_ID = ifelse.((output_features.RME_GBRMPA_ID .== "20198"), "20-198", output_features.RME_GBRMPA_ID)
+# Attach the latest version of RME_GBRMPA_IDs as from `id_list_2023_03_30.csv`.
+output_features.RME_GBRMPA_ID = rme_ids.reef_ids
 
 # Convert area in km² to m²
 output_features.ReefMod_area_m2 .= rme_ids[:, :area_km2] .* 1e6
