@@ -7,7 +7,7 @@ incorporating data from:
     - The metadata for the data.gov.au entry states it has been "Updated 16/08/2023"
 - A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`
   This is referred to as the AC lookup table.
-- `id_list_2023_03_30.csv` from ReefMod Engine 2024-01-08 (v1.0.28)
+- `id_list_2023_03_30.csv` from ReefMod Engine 2024-06-13 (v1.0.33)
 
 See project README.md for further details.
 """
@@ -16,7 +16,13 @@ include("common.jl")
 
 # Load datasets
 ac_lookup = CSV.read(joinpath(DATA_DIR, "GBR_reefs_lookup_table_Anna_update_2024-03-06.csv"), DataFrame, missingstring="NA")
-rme_features = GDF.read(joinpath(DATA_DIR, "reefmod_gbr.gpkg"))
+rme_features = GDF.read(joinpath(DATA_DIR,"reefmod_gbr.gpkg"))
+rme_ids = CSV.read(
+    joinpath(DATA_DIR, "id_list_2023_03_30.csv"),
+    DataFrame,
+    header=false,
+    comment="#"
+)
 gbr_features = GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_Features.shp"))
 
 # Standardize name format (strips the single quote from strings)
@@ -25,6 +31,10 @@ gbr_features = GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_F
 # i.e., cannot mix string and symbols keys
 rename!(ac_lookup, Dict("Cscape cluster" => :cscape_cluster))
 rename!(ac_lookup, Dict(:Tempgrowth => :temp_growth, :LTMP_reef => :is_LTMP_reef))
+
+# Attach correct names to rme_ids from id_list_2023_03_30.csv
+id_list_names = ["reef_id", "area_km2", "sand_proportion", "shelf_position"]
+rename!(rme_ids, ["Column$(i)" => col_name for (i, col_name) in enumerate(id_list_names)])
 
 # Find UNIQUE IDs in RME dataset that do not appear in GBRMPA dataset
 mismatched_unique = findall(.!(rme_features.UNIQUE_ID .∈ [gbr_features.UNIQUE_ID]))
@@ -53,11 +63,10 @@ gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values
 updated_idx = rme_features.LABEL_ID .∈ Ref(keys(updated_ID_mapping))
 updated_reefs_rme_ids = rme_features[updated_idx, :UNIQUE_ID]
 
-old_LABEL_IDs = vcat(gbr_features[matching_reefs, :LABEL_ID], rme_features[updated_idx, :LABEL_ID])
 old_UNIQUE_IDs = vcat(matching_UNIQUE_IDs, updated_reefs_rme_ids)
 
 gbr_matched[!, :RME_UNIQUE_ID] = old_UNIQUE_IDs
-gbr_matched[!, :RME_GBRMPA_ID] = old_LABEL_IDs
+gbr_matched[!, :RME_GBRMPA_ID] = rme_ids.reef_id
 
 # Start copying relevant columns
 cols_of_interest = [:UNIQUE_ID, :LABEL_ID, :X_LABEL, :LOC_NAME_S, :RME_UNIQUE_ID, :RME_GBRMPA_ID]
@@ -113,8 +122,11 @@ output_features .= ifelse.(ismissing.(output_features), "NA", output_features)
 string_cols = contains.(string.(typeof.(eachcol(output_features))), "String")
 output_features[!, contains.(string.(typeof.(eachcol(output_features))), "String")] .= String.(output_features[:, string_cols])
 
-# Correct incorrect GBRMPA_ID to match cots_priority data
-output_features.GBRMPA_ID = ifelse.((output_features.GBRMPA_ID .== "20198"), "20-198", output_features.GBRMPA_ID)
+# Convert area in km² to m²
+output_features.ReefMod_area_m2 .= rme_ids[:, :area_km2] .* 1e6
+
+# Calculate `k` area (1.0 - "ungrazable" area)
+output_features.ReefMod_habitable_proportion .= 1.0 .- rme_ids[:, :sand_proportion]
 
 # Reproject output_features from GDA94 EPSG4283 to GDA2020 EPSG7844 to match GBRMPA geohub data
 output_features.geometry = AG.reproject(output_features.geometry, GI.crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
