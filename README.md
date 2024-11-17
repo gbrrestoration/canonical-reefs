@@ -8,6 +8,8 @@ Generates a standardized geopackage file including data from:
 - GBRMPA Reef Feature dataset:
   - https://data.gov.au/dataset/ds-dga-51199513-98fa-46e6-b766-8e1e1c896869/details
   - The metadata for the data.gov.au entry states it has been "Updated 16/08/2023"
+- COTS Control prioritization data:
+  - CoTS data provided by GBRMPA under CC BY-NC 4.0 (http://creativecommons.org/licenses/by-nc/4.0)
 - GBRMPA regional management areas:
   - https://geohub-gbrmpa.hub.arcgis.com/datasets/a21bbf8fa08346fabf825a849dfaf3b3_59/explore
 - GBRMPA marine park zones:

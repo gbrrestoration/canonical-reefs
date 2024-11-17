@@ -63,10 +63,13 @@ gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values
 updated_idx = rme_features.LABEL_ID .∈ Ref(keys(updated_ID_mapping))
 updated_reefs_rme_ids = rme_features[updated_idx, :UNIQUE_ID]
 
+old_LABEL_IDs = vcat(gbr_features[matching_reefs, :LABEL_ID], rme_features[updated_idx, :LABEL_ID])
+RME_LABEL_IDs = ifelse.(old_LABEL_IDs .== "20198", "20-198", old_LABEL_IDs)
+
 old_UNIQUE_IDs = vcat(matching_UNIQUE_IDs, updated_reefs_rme_ids)
 
 gbr_matched[!, :RME_UNIQUE_ID] = old_UNIQUE_IDs
-gbr_matched[!, :RME_GBRMPA_ID] = rme_ids.reef_id
+gbr_matched[!, :RME_GBRMPA_ID] = RME_LABEL_IDs
 
 # Start copying relevant columns
 cols_of_interest = [:UNIQUE_ID, :LABEL_ID, :X_LABEL, :LOC_NAME_S, :RME_UNIQUE_ID, :RME_GBRMPA_ID]
