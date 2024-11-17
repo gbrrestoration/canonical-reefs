@@ -1,17 +1,11 @@
-using GeoIO
-
 include("common.jl")
 
 # Indigenous Land Use Agreement data from http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 
-# Reformat ILUA shapefile to geojson for loading with GeoDataFrames - can't load original with GDF.load() due to date formats in shp
-ILUA_geotable_init = GeoIO.load(joinpath(DATA_DIR, "indigenous_land_use_agreements/ILUA_Registered_Notified_Nat.shp"))
-GeoIO.save(joinpath(DATA_DIR, "Indigenous_Land_Use_Agreements.geojson"), ILUA_geotable_init)
-
 # Load input data.
 canonical_file = find_latest_file(OUTPUT_DIR)
 RRAP_lookup = GDF.read(canonical_file)
-ILUA_zones = GDF.read(joinpath(DATA_DIR, "Indigenous_Land_Use_Agreements.geojson"))
+ILUA_zones = GDF.read(joinpath(DATA_DIR, "indigenous_land_use_agreements/ILUA_Registered_Notified_Nat.shp"))
 
 # Reproject indigenous land use agreement zones to EPSG:7844 (GDA2020) to match RRAP_lookup
 ILUA_zones.geometry = AG.reproject(ILUA_zones.geometry, GI.crs(ILUA_zones[1,:geometry]), EPSG(7844); order=:trad)
