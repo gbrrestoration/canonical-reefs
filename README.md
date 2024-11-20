@@ -89,6 +89,20 @@ include("run_all.jl")
 The final outputted file is a geopackage of the form:
 `canonical_gbr_[date scripts were run].gpkg`.
 
+### Bathymetry data
+Bathymetry data can be downloaded from the above location. `10_extract_reef_depths.jl` expects
+a specific directory structure as follows, with each region folder containing a bathymetry
+`*.tif` file.
+
+```bash
+BATHY_DATA_DIR
+└───bathy
+    ├───Cairns-Cooktown
+    ├───FarNorthern
+    ├───Mackay-Capricorn
+    └───Townsville-Whitsunday
+```
+
 ## Discrepancies
 
 Note that ReefMod Engine uses an older version of GBRMPA IDs (see notes in
