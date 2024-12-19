@@ -76,6 +76,9 @@ $ julia --project=.
 # Instantiate project and switch to src directory
 ]instantiate
 ;cd src
+
+# If using Julia v1.11.0 or newer, packages need to be updated.
+]update
 ```
 
 ```julia
@@ -88,6 +91,23 @@ include("run_all.jl")
 
 The final outputted file is a geopackage of the form:
 `canonical_gbr_[date scripts were run].gpkg`.
+
+### Data files
+Required data files are included in the `data` directory (excluding bathymetry data).
+
+#### Bathymetry data
+Bathymetry data can be downloaded from the above location. `10_extract_reef_depths.jl` expects
+a specific directory structure as follows, with each region folder containing a bathymetry
+`*.tif` file.
+
+```bash
+BATHY_DATA_DIR
+└───bathy
+    ├───Cairns-Cooktown
+    ├───FarNorthern
+    ├───Mackay-Capricorn
+    └───Townsville-Whitsunday
+```
 
 ## Discrepancies
 
