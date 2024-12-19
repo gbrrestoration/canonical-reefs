@@ -76,6 +76,9 @@ $ julia --project=.
 # Instantiate project and switch to src directory
 ]instantiate
 ;cd src
+
+# If using Julia v1.11.0 or newer, packages need to be updated.
+]update
 ```
 
 ```julia
