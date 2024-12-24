@@ -37,8 +37,8 @@ region_path = joinpath(
     "Great_Barrier_Reef_Marine_Park_Management_Areas_20_1685154518472315942.gpkg"
 )
 
-canonical_dataset = find_latest_file(OUTPUT_DIR)
-gbr_features = GDF.read(canonical_dataset)
+canonical_file = find_latest_file(OUTPUT_DIR)
+gbr_features = GDF.read(canonical_file)
 
 # Values are negative so need to flip direction
 # Nominal value are: min, mean, median, max, std
@@ -47,21 +47,19 @@ function summary_func(x, pixel_area, id_area)
 
     if length(collect(x)) > 1
         return [-maximum(x), -mean(x), -median(x), -minimum(x), std(x), prop_area]
-    else
-        return [-first(x), -first(x), -first(x), -first(x), -first(x), prop_area]
     end
+
+    return [-first(x), -first(x), -first(x), -first(x), -first(x), prop_area]
 end
 
-# Using SharedArrays now as we might move to multi-core processing
-# although using GPUs is an option...
-depths = SharedArray(zeros(Float64, size(gbr_features, 1), 6))
-errored_empty = SharedArray(zeros(Int64, size(gbr_features, 1)))
+depths = zeros(Float64, size(gbr_features, 1), 6)
+errored_empty = zeros(Int64, size(gbr_features, 1))
 
 for reg in REGIONS
     @info "Extracting depths for $(reg)"
 
     src_bathy_path = first(glob("*.tif", joinpath(BATHY_DATA_DIR, "bathy", reg)))
-    src_bathy = Raster(src_bathy_path, mappedcrs=EPSG(4326), lazy=true)
+    src_bathy = Raster(src_bathy_path; lazy=true)
 
     res = abs.(step.(dims(src_bathy, (X, Y))))
     pixel_area = res[1] * res[2]
@@ -79,14 +77,15 @@ for reg in REGIONS
     tgt_region = region_features.geometry[reg_idx]
 
     # Reload GBR reef set
-    # Reprojection overwrites data, and we cannot `copy()` as it copies the pointers.
-    gdf = GDF.read(canonical_dataset)
-    gdf[!, :geometry] = Vector{AG.IGeometry}(AG.forceto.(gdf.geometry, AG.wkbMultiPolygon))
+    # Important: Reloading the canonical dataset is intentional as reprojection overwrites
+    # data, and we cannot use `copy()` as it copies the pointers, not the data itself.
+    gdf_tmp = GDF.read(canonical_file)
+    gdf_tmp[!, :geometry] = Vector{AG.IGeometry}(AG.forceto.(gdf_tmp.geometry, AG.wkbMultiPolygon))
 
-    target_geoms = gdf.geometry
+    target_geoms = gdf_tmp.geometry
     target_geoms = AG.reproject(target_geoms, EPSG(4326), proj_str; order=:trad)
 
-    feature_match_ids = unique(findall(GDF.intersects.(tgt_region, target_geoms)))
+    feature_match_ids = unique(findall(GDF.intersects.(tgt_region, gdf_tmp.geometry)))
 
     Threads.@threads for id in feature_match_ids
         id_area = GeometryOps.area(target_geoms[id])
@@ -98,7 +97,8 @@ for reg in REGIONS
                 # Raises ArgumentError where `zonal()` produces `Missing` (no data)
                 msg = "MethodError or ArgumentError on $(id)\n"
                 msg = msg * "Possibly a reef feature with no overlapping polygon"
-                @info msg collect(gdf[id, [:UNIQUE_ID, :reef_name]])
+                @info msg collect(gdf_tmp[id, [:UNIQUE_ID, :reef_name]])
+                @info err
                 errored_empty[id] = 1
                 continue
             end
@@ -108,7 +108,7 @@ for reg in REGIONS
         end
 
         if depths[id, 1] < -5
-            reef = collect(gdf[id, [:UNIQUE_ID, :reef_name]])
+            reef = collect(gdf_tmp[id, [:UNIQUE_ID, :reef_name]])
             @warn "$(reef) has a minimum depth value higher than 5m above sea level."
         end
     end
@@ -116,21 +116,43 @@ end
 
 # Threads on inner loop (12 threads)
 # 88.003740 seconds (29.41 M allocations: 7.957 GiB, 1.54% gc time, 2.32% compilation time)
-errored_empty[depths[:, 6] .< 0.05] .= 3
-depths[errored_empty .> 0, 1:5] .= 7.0  # Set depth vals to ReefMod default value if nothing found.
 
 # Set quality flags:
 # 0 = no error (does not indicate polygons that only partially overlap a target reef!)
 # 1 = no overlap error (value set to 7m)
 # 2 = minimum value above sea level (no change made, just a flag)
-# 3 = raster pixels cover < 5% of the reef polygon area (value set to 7m)
+# 3 = raster pixels cover < 5% of the reef polygon area (no change, just a flag)
+errored_empty[depths[:, 6] .< 0.05] .= 3
 errored_empty[depths[:, 1] .< 0.0] .= 2
 
-gdf = GDF.read(canonical_dataset)
-insertcols!(
-    gdf,
-    ([:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_qc, :depth_rast_prop] .=> [1,2,3,4,5,6,7])...
-)
+# Set depth vals to ReefMod default value if nothing found.
+# Could do the same for other QC flags too
+depths[errored_empty .∈ [[1,3]] , 1:5] .= 7.0
+
+gdf = GDF.read(canonical_file)
+
+# Remove existing columns if needed
+if "depth_min" in names(gdf)
+    gdf = gdf[!, Not([:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_qc])]
+end
+
+# Have to check for this column separately
+if "depth_rast_prop" in names(gdf)
+    gdf = gdf[!, Not([:depth_rast_prop])]
+end
+
+# Re-insert the new columns
+try
+    insertcols!(
+        gdf,
+        ([:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_qc, :depth_rast_prop] .=> [1,2,3,4,5,6,7])...
+    )
+catch err
+    if !(err isa LoadError)
+        rethrow(err)
+    end
+end
+
 gdf[!, [:depth_min, :depth_mean, :depth_med, :depth_max, :depth_std, :depth_rast_prop]] = depths
 gdf[!, :depth_qc] .= errored_empty
 
