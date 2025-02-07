@@ -29,5 +29,5 @@ RRAP_lookup.EcoRRAP_photogrammetry_reef .= ifelse.(ismissing.(RRAP_lookup.EcoRRA
 RRAP_lookup.EcoRRAP_photogrammetry_reef = convert.(String, RRAP_lookup.EcoRRAP_photogrammetry_reef)
 
 GDF.write(canonical_file, RRAP_lookup; crs=GBRMPA_CRS)
-GDF.write(replace(canonical_file, ".gpkg"=>".geojson"), RRAP_lookup)
+GDF.write(replace(canonical_file, ".gpkg"=>".geojson"), RRAP_lookup; crs=GBRMPA_CRS)
 CSV.write(replace(canonical_file, ".gpkg"=>".csv"), RRAP_lookup[:, Not(:geometry)])
