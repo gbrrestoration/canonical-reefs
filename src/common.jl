@@ -9,7 +9,7 @@ using
 using
     ColorSchemes,
     GeoMakie,
-    GLMakie
+    CairoMakie
 
 using
     Statistics,

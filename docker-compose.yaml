@@ -1,0 +1,11 @@
+services:
+  canonicalreefs: 
+    build:
+      context: .
+    volumes:
+      - type: bind
+        source: /opt/data/bathy
+        target: /opt/data/bathy
+        read_only: true
+    entrypoint: /bin/sh -c "tail -f /dev/null"
+    
