@@ -7,6 +7,7 @@
 ## Quickstart
 
 Notee: some docker compose installations will either use `docker compose` or `docker-compose`
-
+```
 $ docker compose build
 $ docker compose up -d
+```
