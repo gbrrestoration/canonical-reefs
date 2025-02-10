@@ -11,3 +11,5 @@ Notee: some docker compose installations will either use `docker compose` or `do
 $ docker compose build
 $ docker compose up -d
 ```
+
+When this runs successfully, the outputs will be in the ./outputs dir
