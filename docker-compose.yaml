@@ -4,9 +4,13 @@ services:
       context: .
     volumes:
       - type: bind
-        source: /opt/data/bathy
+        source: /srv/data/bathy
         target: /opt/data/bathy
         read_only: true
+      - type: bind
+        source: ./output
+        target: /app/output
+        read_only: false
     #entrypoint: /bin/sh -c "tail -f /dev/null"
     entrypoint: ./entrypoint.sh
     

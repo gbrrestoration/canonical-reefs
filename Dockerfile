@@ -10,7 +10,7 @@ RUN apt-get install -y coreutils
 RUN julia --project=. -e 'using Pkg; Pkg.instantiate();'
 
 RUN mkdir -p /opt/data/bathy
-RUN echo "[bathy]\nBATHY_DATA_DIR = '/opt/data/bathy'\n" > .config.toml
+RUN echo "[bathy]\nBATHY_DATA_DIR = '/opt/data/bathy'\n" > src/.config.toml
 
 
 ENTRYPOINT ["./entrypoint.sh"]
