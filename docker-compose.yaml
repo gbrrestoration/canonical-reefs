@@ -1,0 +1,16 @@
+services:
+  canonicalreefs: 
+    build:
+      context: .
+    volumes:
+      - type: bind
+        source: /opt/data/bathy #Point to root dir of dataset: https://hdl.handle.net/102.100.100/660883
+        target: /opt/data/bathy
+        read_only: true
+      - type: bind
+        source: ./output
+        target: /app/output
+        read_only: false
+    #entrypoint: /bin/sh -c "tail -f /dev/null"
+    entrypoint: ./entrypoint.sh
+    
