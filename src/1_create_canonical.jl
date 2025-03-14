@@ -23,7 +23,8 @@ rme_ids = CSV.read(
     header=false,
     comment="#"
 )
-gbr_features = GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_Features.shp"))
+#Update to only inlude Reef Features --> "Reef" in FEAT_NAME, results in 3862 reef polygons
+gbr_features = filter(row -> row.FEAT_NAME == "Reef", GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_Features.shp")))
 
 # Standardize name format (strips the single quote from strings)
 # and turn Pascal case to snake case, use lower case where appropriate, etc.
@@ -39,8 +40,12 @@ rename!(rme_ids, ["Column$(i)" => col_name for (i, col_name) in enumerate(id_lis
 # Find UNIQUE IDs in RME dataset that do not appear in GBRMPA dataset
 mismatched_unique = findall(.!(rme_features.UNIQUE_ID .∈ [gbr_features.UNIQUE_ID]))
 
+# Find UNIQUE IDs in GBRMPA dataset that do not appear in RME dataset
+mismatched_unique_GBRMPA = findall(.!(gbr_features.UNIQUE_ID .∈ [rme_features.UNIQUE_ID]))
 # IDs of the mismatched reefs
 # rme_features.UNIQUE_ID[mismatched_unique]
+# IDS and data of the mismatched GBRMPA reefs to inspect, these are mostly inshore or Torres Straight reefs that have been excluded by ReefMod
+mismatched_unique_GBRMPAnames = gbr_features[mismatched_unique_GBRMPA, :]
 
 # These missing ones are the same as noted above by their LTMP IDs
 # These will be replaced with the revised IDs
