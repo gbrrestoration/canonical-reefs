@@ -23,7 +23,8 @@ rme_ids = CSV.read(
     header=false,
     comment="#"
 )
-#Update to only inlude Reef Features --> "Reef" in FEAT_NAME, results in 3862 reef polygons
+
+# Update to only include Reef Features --> "Reef" in FEAT_NAME, results in 3862 reef polygons
 gbr_features = filter(row -> row.FEAT_NAME == "Reef", GDF.read(joinpath(DATA_DIR, "gbr_features", "Great_Barrier_Reef_Features.shp")))
 
 # Standardize name format (strips the single quote from strings)
@@ -62,7 +63,6 @@ matching_UNIQUE_IDs = gbr_features[matching_reefs, :UNIQUE_ID]
 gbr_matched = gbr_features[matching_reefs, :]
 
 # Add the five missing reefs
-
 gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values(updated_ID_mapping)), :])
 
 # Find and add the relevant IDs for the missing reefs
@@ -90,15 +90,14 @@ cols_of_interest = [:UNIQUE_ID, :LABEL_ID, :X_LABEL, :LOC_NAME_S, :RME_UNIQUE_ID
 output_features = gbr_matched[:, cols_of_interest]
 
 # Standardize column names for ease of copying
-
 cols_to_copy = [:cscape_cluster, :is_LTMP_reef, :EcoRRAP_photogrammetry_reef, :cscape_region, :temp_growth]
 # ISSUE WITH BELOW LINE: all columns are getting displaced -- we will use a join instead
 # output_features = hcat(output_features, ac_lookup[:, cols_to_copy])
 
 # Perform an antijoin, if it has more than 0 rows, then there are unmatched LABEL_IDs and give ean error
 unmatched = antijoin(output_features, ac_lookup[:, Cols(:LABEL_ID, cols_to_copy)], on=:LABEL_ID)
-# Check the number of rows in unmatched
 
+# Check the number of rows in unmatched
 @assert nrow(unmatched) == 0 "There are unmatched LABEL_IDs in the join. Number of unmatched rows: $(nrow(unmatched))"
 
 # Join the relevant columns from ac_lookup to output_features instead of concatenating
@@ -108,8 +107,8 @@ output_features = leftjoin(output_features, ac_lookup[:, Cols(:LABEL_ID, cols_to
 # output_features = hcat(output_features, gbr_matched[:, [:X_COORD, :Y_COORD, :geometry]])
 
 unmatched = antijoin(output_features, gbr_matched[:, [:LABEL_ID, :X_COORD, :Y_COORD, :geometry]], on=:LABEL_ID)
-# Check the number of rows in unmatched
 
+# Check the number of rows in unmatched
 @assert nrow(unmatched) == 0 "There are unmatched LABEL_IDs in the join. Number of unmatched rows: $(nrow(unmatched))"
 
 output_features = leftjoin(output_features, gbr_matched[:, [:LABEL_ID, :X_COORD, :Y_COORD, :geometry]], on=:LABEL_ID)
@@ -123,6 +122,7 @@ known_mismatched_labels = collect(values(updated_ID_mapping))
 
 # Also exclude rows with invalid or nonsense UNIQUE_ID (e.g., "#N/A")
 invalid_unique_ids = ["#N/A", "NA"]
+
 # Function to check if "E" exists in a UNIQUE_ID --> catch scientific notation converted to string
 contains_E(id) = occursin("E", string(id))  # Convert to string in case of non-string IDs
 
@@ -224,6 +224,7 @@ polys = valid_geoms[poly_idxs]
 # Convert arrays to standard geometry type (avoiding Union{Missing, AG.IGeometry})
 multipolys = convert(Vector{AG.IGeometry}, multipolys)
 polys = convert(Vector{AG.IGeometry}, polys)
+
 # Reproject separately
 multipolys_proj = AG.reproject(multipolys, source_crs, target_crs; order=:trad)
 polys_proj = AG.reproject(polys, source_crs, target_crs; order=:trad)
