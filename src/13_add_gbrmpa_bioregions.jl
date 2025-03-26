@@ -1,7 +1,5 @@
 include("common.jl")
 
-const GEOM = AG.IGeometry
-
 OVERLAP_THRESHOLD::Float64 = 0.5
 
 # GBRMPA bioregion geopackage
@@ -13,9 +11,9 @@ canonical_gpkg = GDF.read(canonical_file)
 
 """Get the proportion of canonical reef area covered by a bioregion reef polygon."""
 function intersection_proportion(
-    canonical_geom::GEOM,
+    canonical_geom::AG.IGeometry,
     canonical_geom_area::Float64,
-    bioregion_geom::GEOM
+    bioregion_geom::AG.IGeometry
 )
     if !AG.intersects(canonical_geom, bioregion_geom)
         return 0.0
@@ -40,10 +38,10 @@ canonical_bioregion_idxs = [
 
 # Get proportion of polygon overlapping with bioregion polygon
 canonical_overlap_props = getindex.(canonical_bioregion_idxs, Ref(1))
-# Canonical locations for which there was less the 75% polygon area overlap
-canonical_no_assign_mask = 0.0 <= canonical_overlap_props <= OVERLAP_THRESHOLD
 # For each canonical reef get the index of the corresponding bioregion idx
 canonical_bioregion_idxs = getindex.(canonical_bioregion_idxs, Ref(2))
+# Canonical locations for which there was less the 75% polygon area overlap
+canonical_no_assign_mask = 0.0 <= canonical_overlap_props <= OVERLAP_THRESHOLD
 # get bioregion for each canonical reef
 canonical_bioregions = bioregions_gpkg.BIOREGION[canonical_bioregion_idxs]
 canonical_bioregions[canonical_no_assign_mask] = -1
