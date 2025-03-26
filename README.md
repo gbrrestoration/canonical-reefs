@@ -26,7 +26,7 @@ Generates a standardized geopackage file including data from:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 - Satellite-derived Bathymetry data at 10m resolution
   - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
-  - NEW Link to ReefGeoHub https://geohub-gbrmpa.hub.arcgis.com/maps/f644f02ec646496eb5d31ad4f9d0fc64/about
+  - On ReefGeoHub https://geohub-gbrmpa.hub.arcgis.com/maps/f644f02ec646496eb5d31ad4f9d0fc64/about
   - Functionality of depth extraction (Script `10_extract_reef_depths.jl`) relies on depth
   data being in a projection with metre coordinate units.
 - QLD Port Location data
