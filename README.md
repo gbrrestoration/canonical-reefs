@@ -244,19 +244,6 @@ in cases where:
 
 ### COTS Priority reefs
 
-Paraphrasing details from Dr S. Condie (pers comm. Thu 2024-03-28 14:23).
-
-GBRMPA classifies reefs as:
-
-- T = target
-- P = priority
-- N = non-priority
-
-In both CoCoNet and ReefMod, reefs are controlled until annual capacity (based on number of
-vessels and divers) is fully utilised, starting by selecting randomly from the target reefs,
-then randomly from the priority reefs, and then - if there is spare capacity, which is
-rarely - randomly from the non-priority.
-
 Update from Sam Matthews (ex-GBRMPA Fri 2025-03-2025)
 
 Reefs provided are Target Reefs only, and the "priority" list is being phased out / rethought. Previous versions of the canoncial reefs had misinterpreted Rankings, this has been rectified. Reefs are now classified as:
