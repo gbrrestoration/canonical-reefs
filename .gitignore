@@ -19,6 +19,8 @@ docs/site/
 
 .vscode/
 
+# Script output files
 output/
+figs/
 
 src/.config.toml
