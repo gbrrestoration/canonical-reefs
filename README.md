@@ -33,6 +33,8 @@ Generates a standardized geopackage file including data from:
   - Provided by Dr. Marji Puotinen
 - EcoRRAP site locations from EcoRRAP team
   - Provided by Dr. Maren Toor
+- GBRMPA Bioregions
+  - https://geohub-gbrmpa.hub.arcgis.com/datasets/GBRMPA::reefal-marine-bioregions/about
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -65,6 +67,9 @@ this file is unique to each user, and should not be committed to the repository.
 ```TOML
 [bathy]
 BATHY_DATA_DIR = "path to bathymetry data"  # location of bathymetry raster datasets
+
+[bioregions]
+BIOREGION_GPKG_PATH = "path to bioregion geopackage"
 ```
 
 Otherwise, follow the usual Julia setup process.
