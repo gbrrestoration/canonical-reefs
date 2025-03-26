@@ -63,7 +63,9 @@ matching_UNIQUE_IDs = gbr_features[matching_reefs, :UNIQUE_ID]
 gbr_matched = gbr_features[matching_reefs, :]
 
 # Add the five missing reefs
+# This step introduces misalignment of rows with ac_lookup which is corrected by using joins below
 gbr_matched = vcat(gbr_matched, gbr_features[gbr_features.LABEL_ID.∈Ref(values(updated_ID_mapping)), :])
+
 
 # Find and add the relevant IDs for the missing reefs
 updated_idx = rme_features.LABEL_ID .∈ Ref(keys(updated_ID_mapping))
@@ -91,7 +93,7 @@ output_features = gbr_matched[:, cols_of_interest]
 
 # Standardize column names for ease of copying
 cols_to_copy = [:cscape_cluster, :is_LTMP_reef, :EcoRRAP_photogrammetry_reef, :cscape_region, :temp_growth]
-# ISSUE WITH BELOW LINE: all columns are getting displaced -- we will use a join instead
+# ISSUE WITH BELOW LINE: all columns are getting misaligned -- we will use a join instead
 # output_features = hcat(output_features, ac_lookup[:, cols_to_copy])
 
 # Perform an antijoin, if it has more than 0 rows, then there are unmatched LABEL_IDs and give ean error
@@ -113,7 +115,6 @@ unmatched = antijoin(output_features, gbr_matched[:, [:LABEL_ID, :X_COORD, :Y_CO
 
 output_features = leftjoin(output_features, gbr_matched[:, [:LABEL_ID, :X_COORD, :Y_COORD, :geometry]], on=:LABEL_ID)
 
-
 # Here we take a big leap of faith.
 # The order indicated in AC's lookup table is said to match that of RME's
 # so we replace UNIQUE_ID with RME's to ensure row order remains identical.
@@ -123,14 +124,12 @@ known_mismatched_labels = collect(values(updated_ID_mapping))
 # Also exclude rows with invalid or nonsense UNIQUE_ID (e.g., "#N/A")
 invalid_unique_ids = ["#N/A", "NA"]
 
-# Function to check if "E" exists in a UNIQUE_ID --> catch scientific notation converted to string
-contains_E(id) = occursin("E", string(id))  # Convert to string in case of non-string IDs
-
 # Exclude known mismatches, invalid UNIQUE_IDs, and any ID containing "E"
 good_rows = .!(
     (ac_lookup.LABEL_ID .∈ Ref(known_mismatched_labels)) .| 
     (ac_lookup.UNIQUE_ID .∈ Ref(invalid_unique_ids)) .| 
-    contains_E.(ac_lookup.UNIQUE_ID)  # Apply check for "E"
+    # check if "E" exists in a UNIQUE_ID --> catch scientific notation converted to string
+    occursin("E", string(ac_lookup.UNIQUE_ID)) 
 )
 
 # Check alignment explicitly again on these good rows
@@ -138,7 +137,7 @@ misaligned_indices = findall(ac_lookup.UNIQUE_ID[good_rows] .!= rme_features.UNI
 
 # Display misaligned rows clearly if any remain
 if !isempty(misaligned_indices)
-    println("Misaligned rows detected (excluding known mismatches and invalid IDs):")
+    @warn("Misaligned rows detected (excluding known mismatches and invalid IDs):")
     misaligned_rows = DataFrame(
         index = misaligned_indices,
         ac_lookup_LABEL_ID = ac_lookup.LABEL_ID[good_rows][misaligned_indices],
@@ -146,8 +145,11 @@ if !isempty(misaligned_indices)
         rme_features_UNIQUE_ID = rme_features.UNIQUE_ID[good_rows][misaligned_indices]
     )
     display(misaligned_rows)
+    
+    # Write misaligned rows to a CSV file
+    CSV.write(joinpath(OUTPUT_DIR, "misaligned_rows_$(Dates.format(now(), "yyyy-mm-dd")).csv"), misaligned_rows)
 else
-    println("No misalignments detected apart from known mismatches and invalid UNIQUE_ID entries.")
+    @info("No misalignments detected apart from known mismatches and invalid UNIQUE_ID entries.")
 end
 
 
@@ -201,10 +203,8 @@ output_features.ReefMod_area_m2 .= rme_ids[:, :area_km2] .* 1e6
 output_features.ReefMod_habitable_proportion .= 1.0 .- rme_ids[:, :sand_proportion]
 
 
-
 # Reproject output_features from GDA94 EPSG4283 to GDA2020 EPSG7844 to match GBRMPA geohub data
 # THIS WAS CAUSING AN ISSUE DO TO THE MIX OF POLYGON AND MULTIPOLYGON GEOMETRIES NEW SECTION BELOW
-#output_features.geometry = AG.reproject(output_features.geometry, GI.crs(output_features[1,:geometry]), EPSG(7844); order=:trad)
 
 # Define source and target CRS
 source_crs = GI.crs(output_features[1, :geometry])

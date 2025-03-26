@@ -11,11 +11,12 @@ rename!(
     Dict(
         "Latitude"=>:cots_LAT,
         "Longitude"=>:cots_LON,
-        "ReefID"=>:GBRMPA_ID,
-        #"RankForAction"=>:target
+        "ReefID"=>:GBRMPA_ID
         )
     )
+
 cots_target = cots_target[:, [:GBRMPA_ID, :cots_LON, :cots_LAT]]
+
 # Add a column called `target` with value "T" for each row as the table provided is just of Target Reefs
 insertcols!(cots_target, :target => "T")
 
