@@ -205,6 +205,6 @@ function original_bio_to_spatial_grouping(
     return assigned_bio_regs[idx]
 end
 
-canonical_assigned_bioregions = original_bio_to_spatial_grouping.(canonical_bioregions)
-canonical_gpkg[!, :SPATIAL_GROUPING]
+canonical_spatial_groupings = original_bio_to_spatial_grouping.(canonical_bioregions)
+canonical_gpkg[!, :SPATIAL_GROUPING] .= canonical_spatial_groupings
 GDF.write(canonical_file, canonical_gpkg; crs=GBRMPA_CRS)
