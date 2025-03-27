@@ -34,7 +34,6 @@ try
     global CONFIG = TOML.parsefile("./.config.toml")
     global BATHY_DATA_DIR = CONFIG["bathy"]["BATHY_DATA_DIR"]
     global BIOREGION_GPKG_PATH = CONFIG["bioregions"]["BIOREGION_GPKG_PATH"]
-    global LTMP_MANTA_TOW_PATH = CONFIG["bioregions"]["LTMP_MANTA_TOW_PATH"]
 catch
     @warn "No configuration file found!"
 end
