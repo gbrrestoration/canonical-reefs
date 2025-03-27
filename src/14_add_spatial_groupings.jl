@@ -7,7 +7,7 @@ canonical_file = find_latest_file(OUTPUT_DIR)
 canonical_gpkg = GDF.read(canonical_file)
 
 # Load LTMP Manta Tow data
-manta_tow_data = GDF.read(LTMP_MANTA_TOW_PATH)
+manta_tow_data = GDF.read(joinpath(DATA_DIR, "ltmp_manta_tow.gpkg"))
 
 """Get the proportion of canonical reef area covered by a bioregion reef polygon."""
 function intersection_proportion(
