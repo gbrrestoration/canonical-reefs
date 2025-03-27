@@ -118,19 +118,12 @@ locs_enough_data = enough_data(manta_tow_data[:, yr_2008_idx:end])
 
 all_bioregs = unique(bioregions_gpkg.BIOREGION)
 
+# Count the number of ltmp locations with sufficient data in each bioregion
 ltmp_counts = zeros(Int64, length(all_bioregs))
-
 for (idx, bioreg) in enumerate(all_bioregs)
     bioreg_mask = ltmp_bioregion .== bioreg
     msk = bioreg_mask .&& locs_enough_data
     ltmp_counts[idx] = count(msk)
-end
-
-enough_data_mask = fill(false, 3806)
-for (bioreg, cnt) in zip(all_bioregs, ltmp_counts)
-    if cnt >= 4
-        enough_data_mask .|= canonical_bioregions .== bioreg
-    end
 end
 
 """Given a two lists of geometries, construct a distance matrix between the two lists."""
@@ -148,7 +141,8 @@ end
 
 """
 Quantify the distance between two bioregions by taking the 10% quantile of all distances
-between locations. The distances are only meant to be used in a relative manner.
+between locations. The distances are only meant to be used in a relative manner. Use the the
+quantile to avoid the impact of extreme values.
 """
 function bioregion_distance(
     b1::Int64,
@@ -170,13 +164,15 @@ bioregion_no_data = ltmp_counts .< 4
 # Grouped bioregions guarantee enough data
 bioregion_assignment = zeros(Int64, length(all_bioregs))
 
-# bioregions with sufficient ltmp data are assignmed to themselves
+# bioregions with sufficient ltmp data are assigned to themselves
 bioregion_assignment[(!).(bioregion_no_data)] = all_bioregs[(!).(bioregion_no_data)]
 
 for (idx, bioreg) in enumerate(all_bioregs)
+    # If the bioregion is assigned to itself, skip
     if bioregion_assignment[idx] != 0
         continue
     end
+
     # find the closest bioregion with enough data
     min_dist = 10000
     for bioreg_w_data in all_bioregs[(!).(bioregion_no_data)]
@@ -206,5 +202,7 @@ function original_bio_to_spatial_grouping(
 end
 
 canonical_spatial_groupings = original_bio_to_spatial_grouping.(canonical_bioregions)
+
+# Write the spatial groupings to the canonical geopackage and save the file.
 canonical_gpkg[!, :SPATIAL_GROUPING] .= canonical_spatial_groupings
 GDF.write(canonical_file, canonical_gpkg; crs=GBRMPA_CRS)
