@@ -3,11 +3,11 @@ include("common.jl")
 bioregions_gpkg = GDF.read(BIOREGION_GPKG_PATH)
 
 # load existing canonical gpkg to edit
-canonical_file = find_lastest_file(OUTPUT_DIR)
+canonical_file = find_latest_file(OUTPUT_DIR)
 canonical_gpkg = GDF.read(canonical_file)
 
 # Load LTMP Manta Tow data
-manta_tow_data = GDF.read()
+manta_tow_data = GDF.read(LTMP_MANTA_TOW_PATH)
 
 """Get the proportion of canonical reef area covered by a bioregion reef polygon."""
 function intersection_proportion(
@@ -31,7 +31,7 @@ canonical_geom_areas::Vector{Float64} = [
 ]
 
 # Calculate the overlap between canonical reef and bioregion reef overlaps
-canon_bioregion_overlap::Vector{Tuple{Float64, Int64}} = [
+canonical_bioregion_overlap::Vector{Tuple{Float64, Int64}} = [
     findmax(
         x->intersection_proportion(c_geom, c_geom_area, x),
         bioregions_gpkg.geometry
@@ -39,9 +39,9 @@ canon_bioregion_overlap::Vector{Tuple{Float64, Int64}} = [
 ]
 
 # Get proportion of polygon overlapping with bioregion polygon
-canonical_overlap_props = getindex.(canonical_bioregion_idxs, Ref(1))
+canonical_overlap_props = getindex.(canonical_bioregion_overlap, Ref(1))
 # For locations for which there was an overlap, assign the bioregions
-canonical_bioregion_idxs = getindex.(canonical_bioregion_idxs, Ref(2))
+canonical_bioregion_idxs = getindex.(canonical_bioregion_overlap, Ref(2))
 # Canonical locations where there are no bioregion polygons overlapping
 canonical_no_overlap_mask = canonical_overlap_props .!= 0.0
 
@@ -55,7 +55,7 @@ for (canon_idx, overlap) in enumerate(canonical_overlap_props,)
         AG.distance(canonical_gpkg.geometry[canon_idx], bioreg_geom)
         for bioreg_geom in bioregions_gpkg.geometry
     ]
-    canonical_bioregion_idxs = argmin(dists)
+    canonical_bioregion_idxs[canon_idx] = argmin(dists)
 end
 
 # extract bioregions for each canonical reef
@@ -97,7 +97,7 @@ end
 
 """Count the number of non-missing observations in a dataframe row."""
 function count_data_points(dfr::DataFrameRow)::Int64
-    return count((!).(ismissing(collect(dfr))))
+    return count((!).(ismissing.(collect(dfr))))
 end
 
 """
@@ -121,7 +121,7 @@ all_bioregs = unique(bioregions_gpkg.BIOREGION)
 ltmp_counts = zeros(Int64, length(all_bioregs))
 
 for (idx, bioreg) in enumerate(all_bioregs)
-    bioreg_mask =  ltmp_bioregion .== bioreg
+    bioreg_mask = ltmp_bioregion .== bioreg
     msk = bioreg_mask .&& locs_enough_data
     ltmp_counts[idx] = count(msk)
 end
@@ -159,14 +159,15 @@ function bioregion_distance(
     bio1::DataFrame = canonical_gpkg[canonical_bioregions .== b1, :]
     bio2::DataFrame = canonical_gpkg[canonical_bioregions .== b2, :]
 
-    dists_mats = construct_distance_matrix(bio1.geom, bio2.geom)
+    dists_mats = construct_distance_matrix(bio1.geometry, bio2.geometry)
 
     return quantile(vec(dists_mats), 0.1)
 end
 
+# Bioregions with less than 4 observation locations will be grouped with others.
 bioregion_no_data = ltmp_counts .< 4
 
-# Grouped bioregions guarenteeing enough data
+# Grouped bioregions guarantee enough data
 bioregion_assignment = zeros(Int64, length(all_bioregs))
 
 # bioregions with sufficient ltmp data are assignmed to themselves
@@ -188,11 +189,11 @@ for (idx, bioreg) in enumerate(all_bioregs)
 end
 
 """
-    orginal_bio_to_assignmed_bio(original_bio::Int64; original_bio_regs=all_bioregs, assigned_bio_regs=bioregion_assignment)::Int64
+    original_bio_to_spatial_grouping(original_bio::Int64; original_bio_regs=all_bioregs, assigned_bio_regs=bioregion_assignment)::Int64
 
 Convert a bioregion to the reassigned bioregion.
 """
-function orginal_bio_to_assignmed_bio(
+function original_bio_to_spatial_grouping(
     original_bio::Int64;
     original_bio_regs=all_bioregs,
     assigned_bio_regs=bioregion_assignment
@@ -204,4 +205,6 @@ function orginal_bio_to_assignmed_bio(
     return assigned_bio_regs[idx]
 end
 
-canonical_assigned_bioregions = orginal_bio_to_assignmed_bio.(canonical_bioregions)
+canonical_assigned_bioregions = original_bio_to_spatial_grouping.(canonical_bioregions)
+canonical_gpkg[!, :SPATIAL_GROUPING]
+GDF.write(canonical_file, canonical_gpkg; crs=GBRMPA_CRS)
