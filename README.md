@@ -35,6 +35,9 @@ Generates a standardized geopackage file including data from:
   - Provided by Dr. Maren Toor
 - GBRMPA Bioregions
   - https://geohub-gbrmpa.hub.arcgis.com/datasets/GBRMPA::reefal-marine-bioregions/about
+- AIMS Long Term Monitoring Program Manta Tow coral cover data.
+  - Available in AIMS Decision Support share point in
+  `GBR spatial datasets/Calibration data/ltmp_cover_data`.
 
 There are several mismatches between the ReefMod reef list, AC lookup table and the GBRMPA
 reef feature list (see details further below).
@@ -60,9 +63,10 @@ GBR-FeatureAnalysis/
 
 ## Setup
 
-The location of project-specific datasets, specifically, the bathymetry data, needs to be
-defined by creating a `.config.toml` file inside the `src` directory. The options set in
-this file is unique to each user, and should not be committed to the repository.
+The location of project-specific datasets, specifically, the bathymetry data and GBRMPA
+Bioregions, needs to be defined by creating a `.config.toml` file inside the `src`
+directory. The options set in this file is unique to each user, and should not be committed
+to the repository.
 
 ```TOML
 [bathy]
@@ -217,6 +221,8 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
 - `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
 - `12_update_EcoRRAP_locations.jl` : Update reefs that contain EcoRRAP sites to reflect current site list.
+- `13_add_GBRMPA_bioregions.jl` : Adds the bioregions for each reef from the GBRMPA bioregions.
+- `14_add_spatial_groupings.jl` : Adds the spatial groupins used in calibration of CoralBlox.
 
 ## Notes on feature attributes
 
@@ -292,3 +298,12 @@ ID as "20198"). Other data sources using GBMPRA_ID may have fixed this identifie
 
 RME_GBRMPA_ID column contains this ID as "20-198" rather than "20198" as this matches the
 latest reef_id set provided by the ReefMod team.
+
+## Bioregions alignment
+The spatial of the GBRMPA Bioregions geopackage is not the same as the canonical geopackage
+and some reef polygons and slightly different. Reef polygons in GBRMPA bioregions geopackage
+were aligned with canonical reefs reef polygons if the bioregion polygon overlapped atleast
+50% of the canonical reef polygon. The bioregion classification is:
+
+- `-1` : Did not have a corresponding bioregion reef polygon.
+- `>0`: GBRMPA Bioregion.
