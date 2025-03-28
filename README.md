@@ -244,7 +244,7 @@ in cases where:
 
 ### COTS Priority reefs
 
-Update from Sam Matthews (ex-GBRMPA Fri 2025-03-2025)
+Update from Sam Matthews (ex-GBRMPA Fri 2025-03-28)
 
 Reefs provided are Target Reefs only, and the "priority" list is being phased out / rethought. Previous versions of the canoncial reefs had misinterpreted Rankings, this has been rectified. Reefs are now classified as:
 
