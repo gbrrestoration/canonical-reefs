@@ -26,6 +26,7 @@ Generates a standardized geopackage file including data from:
   - http://www.nntt.gov.au/assistance/Geospatial/Pages/DataDownload.aspx
 - Satellite-derived Bathymetry data at 10m resolution
   - https://gbrmpa.maps.arcgis.com/home/item.html?id=f644f02ec646496eb5d31ad4f9d0fc64
+  - On ReefGeoHub https://geohub-gbrmpa.hub.arcgis.com/maps/f644f02ec646496eb5d31ad4f9d0fc64/about
   - Functionality of depth extraction (Script `10_extract_reef_depths.jl`) relies on depth
   data being in a projection with metre coordinate units.
 - QLD Port Location data
@@ -243,18 +244,13 @@ in cases where:
 
 ### COTS Priority reefs
 
-Paraphrasing details from Dr S. Condie (pers comm. Thu 2024-03-28 14:23).
+Update from Sam Matthews (ex-GBRMPA Fri 2025-03-28)
 
-GBRMPA classifies reefs as:
+Reefs provided are Target Reefs only, and the "priority" list is being phased out / rethought. Previous versions of the canoncial reefs had misinterpreted Rankings, this has been rectified. Reefs are now classified as:
 
 - T = target
-- P = priority
-- N = non-priority
+- NA = non-target
 
-In both CoCoNet and ReefMod, reefs are controlled until annual capacity (based on number of
-vessels and divers) is fully utilised, starting by selecting randomly from the target reefs,
-then randomly from the priority reefs, and then - if there is spare capacity, which is
-rarely - randomly from the non-priority.
 
 ### Depth Data and Quality Control flags
 

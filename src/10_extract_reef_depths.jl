@@ -126,6 +126,7 @@ errored_empty[depths[:, 6] .< 0.05] .= 3
 errored_empty[depths[:, 1] .< 0.0] .= 2
 
 # Set depth vals to ReefMod default value if nothing found.
+# ISSUE: If the bathymetry layer is blank it most likely means the reef is deeper than the visible extent and more likely to be >20m
 # Could do the same for other QC flags too
 depths[errored_empty .∈ [[1,3]] , 1:5] .= 7.0
 
