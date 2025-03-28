@@ -43,8 +43,7 @@ mismatched_unique = findall(.!(rme_features.UNIQUE_ID .∈ [gbr_features.UNIQUE_
 
 # Find UNIQUE IDs in GBRMPA dataset that do not appear in RME dataset
 mismatched_unique_GBRMPA = findall(.!(gbr_features.UNIQUE_ID .∈ [rme_features.UNIQUE_ID]))
-# IDs of the mismatched reefs
-# rme_features.UNIQUE_ID[mismatched_unique]
+
 # IDS and data of the mismatched GBRMPA reefs to inspect, these are mostly inshore or Torres Straight reefs that have been excluded by ReefMod
 mismatched_unique_GBRMPAnames = gbr_features[mismatched_unique_GBRMPA, :]
 
