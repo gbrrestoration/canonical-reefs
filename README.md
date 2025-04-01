@@ -305,5 +305,5 @@ and some reef polygons are slightly different. Reef polygons in GBRMPA bioregion
 were aligned with canonical reefs reef polygons if the bioregion polygon overlapped atleast
 50% of the canonical reef polygon. The bioregion classification is:
 
-- `-1` : Did not have a corresponding bioregion reef polygon.
+- `-1`: Did not have a corresponding bioregion reef polygon.
 - `>0`: GBRMPA Bioregion.
