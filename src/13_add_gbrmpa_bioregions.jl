@@ -38,13 +38,17 @@ canonical_bioregion_idxs = [
 
 # Get proportion of polygon overlapping with bioregion polygon
 canonical_overlap_props = getindex.(canonical_bioregion_idxs, Ref(1))
+
 # For each canonical reef get the index of the corresponding bioregion idx
 canonical_bioregion_idxs = getindex.(canonical_bioregion_idxs, Ref(2))
+
 # Canonical locations for which there was less the 75% polygon area overlap
 canonical_no_assign_mask = 0.0 .<= canonical_overlap_props .<= OVERLAP_THRESHOLD
+
 # get bioregion for each canonical reef
 canonical_bioregions = bioregions_gpkg.BIOREGION[canonical_bioregion_idxs]
 canonical_bioregions[canonical_no_assign_mask] .= -1
+
 # write bioregions features to canonical geopackage file
 canonical_gpkg[!, :GBRMPA_BIOREGION] .= canonical_bioregions
 GDF.write(canonical_file, canonical_gpkg; crs=GBRMPA_CRS)

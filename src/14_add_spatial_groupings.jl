@@ -40,8 +40,10 @@ canonical_bioregion_overlap::Vector{Tuple{Float64, Int64}} = [
 
 # Get proportion of polygon overlapping with bioregion polygon
 canonical_overlap_props = getindex.(canonical_bioregion_overlap, Ref(1))
+
 # For locations for which there was an overlap, assign the bioregions
 canonical_bioregion_idxs = getindex.(canonical_bioregion_overlap, Ref(2))
+
 # Canonical locations where there are no bioregion polygons overlapping
 canonical_no_overlap_mask = canonical_overlap_props .!= 0.0
 
@@ -58,7 +60,7 @@ for (canon_idx, overlap) in enumerate(canonical_overlap_props,)
     canonical_bioregion_idxs[canon_idx] = argmin(dists)
 end
 
-# extract bioregions for each canonical reef
+# Extract bioregions for each canonical reef
 canonical_bioregions = bioregions_gpkg.BIOREGION[canonical_bioregion_idxs]
 
 """For a given LTMP Manta Tow point, find the closest bioregion reef."""

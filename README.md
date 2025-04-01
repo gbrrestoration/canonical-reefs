@@ -300,8 +300,8 @@ RME_GBRMPA_ID column contains this ID as "20-198" rather than "20198" as this ma
 latest reef_id set provided by the ReefMod team.
 
 ## Bioregions alignment
-The spatial of the GBRMPA Bioregions geopackage is not the same as the canonical geopackage
-and some reef polygons and slightly different. Reef polygons in GBRMPA bioregions geopackage
+The reef polygons in the GBRMPA Bioregions geopackage are not the same as the canonical geopackage
+and some reef polygons are slightly different. Reef polygons in GBRMPA bioregions geopackage
 were aligned with canonical reefs reef polygons if the bioregion polygon overlapped atleast
 50% of the canonical reef polygon. The bioregion classification is:
 
