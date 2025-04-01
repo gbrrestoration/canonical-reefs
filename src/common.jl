@@ -33,6 +33,7 @@ BATHY_DATA_DIR = ""
 try
     global CONFIG = TOML.parsefile("./.config.toml")
     global BATHY_DATA_DIR = CONFIG["bathy"]["BATHY_DATA_DIR"]
+    global BIOREGION_GPKG_PATH = CONFIG["bioregions"]["BIOREGION_GPKG_PATH"]
 catch
     @warn "No configuration file found!"
 end
