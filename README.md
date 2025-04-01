@@ -51,7 +51,7 @@ are used as the default if any issues arise.
 Assumes `src` is the project root. Each file in `src` is expected to be run in order.
 
 ```code
-GBR-FeatureAnalysis/
+canonical-reefs/
 ├─ src/          # Analysis
 ├─ data/         # Data used to create canonical dataset
 ├─ output/       # Results
@@ -91,8 +91,10 @@ $ julia --project=.
 ```julia
 # Run first script
 include("1_create_canonical.jl")
+# ... and then run other scripts ...
 
-# Run all scripts
+
+# Alternatively, run all scripts
 include("run_all.jl")
 ```
 
