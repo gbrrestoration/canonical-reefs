@@ -18,3 +18,5 @@ include("11_distance_nearest_port.jl");
 include("12_update_EcoRRAP_locations.jl");
 include("13_add_GBRMPA_bioregions.jl")
 include("14_add_spatial_groupings.jl")
+
+include("write_results.jl")
