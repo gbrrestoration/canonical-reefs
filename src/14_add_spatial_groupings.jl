@@ -31,9 +31,9 @@ canonical_geom_areas::Vector{Float64} = [
 ]
 
 # Calculate the overlap between canonical reef and bioregion reef overlaps
-canonical_bioregion_overlap::Vector{Tuple{Float64, Int64}} = [
+canonical_bioregion_overlap::Vector{Tuple{Float64,Int64}} = [
     findmax(
-        x->intersection_proportion(c_geom, c_geom_area, x),
+        x -> intersection_proportion(c_geom, c_geom_area, x),
         bioregions_gpkg.geometry
     ) for (c_geom, c_geom_area) in zip(canonical_gpkg.geometry, canonical_geom_areas)
 ]
@@ -88,7 +88,7 @@ ltmp_bioregion = [
 """Get the length of time between the first and last observations."""
 function get_temporal_range(dfr::DataFrameRow)
     first_yr = findfirst(x -> !ismissing(x), dfr)
-    last_yr  = findlast(x -> !ismissing(x), dfr)
+    last_yr = findlast(x -> !ismissing(x), dfr)
 
     if isnothing(first_yr) || isnothing(last_yr)
         return 0
@@ -147,13 +147,13 @@ between locations. The distances are only meant to be used in a relative manner.
 quantile to avoid the impact of extreme values.
 """
 function bioregion_distance(
-    b1::Int64,
-    b2::Int64;
+    b1::Union{Int64,Float64},
+    b2::Union{Int64,Float64};
     canonical_bioregions=canonical_bioregions,
     canonical_gpkg=canonical_gpkg
 )::Float64
-    bio1::DataFrame = canonical_gpkg[canonical_bioregions .== b1, :]
-    bio2::DataFrame = canonical_gpkg[canonical_bioregions .== b2, :]
+    bio1::DataFrame = canonical_gpkg[canonical_bioregions.==b1, :]
+    bio2::DataFrame = canonical_gpkg[canonical_bioregions.==b2, :]
 
     dists_mats = construct_distance_matrix(bio1.geometry, bio2.geometry)
 
@@ -192,11 +192,11 @@ end
 Convert a bioregion to the reassigned bioregion.
 """
 function original_bio_to_spatial_grouping(
-    original_bio::Int64;
+    original_bio::Union{Int64,Float64};
     original_bio_regs=all_bioregs,
     assigned_bio_regs=bioregion_assignment
 )::Int64
-    idx::Int64 = findfirst(x->x==original_bio, original_bio_regs)
+    idx::Int64 = findfirst(x -> x == original_bio, original_bio_regs)
     if isnothing(idx)
         throw(ArgumentError("Bioregion $(idx) not found in original bioregions"))
     end
