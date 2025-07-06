@@ -90,7 +90,7 @@ $ julia --project=.
 
 ```julia
 # Run first script
-include("1_create_canonical.jl")
+include("01_create_canonical.jl")
 # ... and then run other scripts ...
 
 
@@ -207,24 +207,24 @@ julia> rme_features[mismatched_unique, :LABEL_ID]
 
 ## Adding Additional Data
 
-The following scripts add data to the initial .gpkg created by `1_create_canonical.jl`.
-The setup script (`1_create_canonical.jl`) must be run before the following scripts.
+The following scripts add data to the initial .gpkg created by `01_create_canonical.jl`.
+The setup script (`01_create_canonical.jl`) must be run before the following scripts.
 These scripts make use of the `find_intersections()` function defined in `common.jl`.
 Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 
-- `2_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef.
-- `3_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
-- `4_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
-- `5_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
-- `6_add_designated_shipping_areas.jl` : Adds the corresponding Shipping Exclusion Areas to each reef where applicable.
-- `7_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
-- `8_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
-- `9_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
+- `02_add_cots_priority.jl` : Adds the priority level for cots intervention for each reef.
+- `03_add_management_areas.jl` : Adds the corresponding regional management areas as used by GBRMPA for each reef.
+- `04_add_GBRMPA_zones.jl` : Adds the corresponding marine park zoning for each reef.
+- `05_add_Traditional_Use_of_Marine_Resources_Agreements.jl` : Adds Traditional Use of Marine Resource Agreement labels where applicable to each reef.
+- `06_add_designated_shipping_areas.jl` : Adds the corresponding Shipping Exclusion Areas to each reef where applicable.
+- `07_add_cruise_transit_lanes.jl` : Adds the corresponding Cruise Ship Transit Lane label to each reef where applicable.
+- `08_add_Indigenous_Protected_Areas.jl` : Adds the corresponding Indigenous Protected Areas to reefs where applicable.
+- `09_add_Indigenous_Land_Use_Agreements.jl` : Adds the corresponding Indigenous Land Use Agreement area labels to each reef where applicable.
 - `10_extract_reef_depths.jl` : Use reef features to estimate reef depths from satellite-derived raster data.
 - `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
 - `12_update_EcoRRAP_locations.jl` : Update reefs that contain EcoRRAP sites to reflect current site list.
 - `13_add_GBRMPA_bioregions.jl` : Adds the bioregions for each reef from the GBRMPA bioregions.
-- `14_add_spatial_groupings.jl` : Adds the spatial groupins used in calibration of CoralBlox.
+- `14_add_cb_calib_groups.jl` : Adds the spatial groupins used in calibration of CoralBlox.
 
 ## Notes on feature attributes
 
@@ -283,7 +283,7 @@ The `depth_qc` attribute values indicate:
 
 ### Coordinate Reference Systems
 
-`1_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
+`01_create_canonical.jl` uses a Great Barrier Reef Features dataset to create the initial
 canoical dataset. These features are in CRS EPSG:4283 (GDA1994). These features are then
 reprojected to be in CRS EPSG:7844 (GDA2020) to be consistent with other data from GBRMPA.
 
