@@ -224,7 +224,7 @@ Each script saves to the same file: `rrap_canonical_[date of creation].gpkg`
 - `11_distance_nearest_port.jl` : Find the port closest to a reef. Document port name and corresponding distance (in meters using Haversine distance).
 - `12_update_EcoRRAP_locations.jl` : Update reefs that contain EcoRRAP sites to reflect current site list.
 - `13_add_GBRMPA_bioregions.jl` : Adds the bioregions for each reef from the GBRMPA bioregions.
-- `14_add_cb_calib_groups.jl` : Adds the spatial groupins used in calibration of CoralBlox.
+- `14_add_cb_calib_groups.jl` : Adds `CB_CALIB_GROUPS`, used in CoralBlox's calibration.
 
 ## Notes on feature attributes
 
