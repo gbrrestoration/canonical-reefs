@@ -205,7 +205,9 @@ end
 
 canonical_cb_calib_groups = original_bio_to_spatial_grouping.(canonical_bioregions)
 
-# Split group 27 in two moving all reefs below Feather Reef to new temporary group 28
+# Group 27 was split into two groups (north and south of Feather Reef) due to the large
+# spatial extent and observed poor results when calibrating. Calibration results after this
+# split improved the fit. The dividing point (Feather Reef) was suggested by Sam Matthews.
 feather_reef_id = "17034100104"
 feather_reef = canonical_gpkg[canonical_gpkg.UNIQUE_ID.==feather_reef_id, :]
 cb_calib_group_27 = canonical_gpkg[canonical_cb_calib_groups.==27, :]
