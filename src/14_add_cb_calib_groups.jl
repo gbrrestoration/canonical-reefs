@@ -203,8 +203,24 @@ function original_bio_to_spatial_grouping(
     return assigned_bio_regs[idx]
 end
 
-canonical_spatial_groupings = original_bio_to_spatial_grouping.(canonical_bioregions)
+canonical_cb_calib_groups = original_bio_to_spatial_grouping.(canonical_bioregions)
+
+# Group 27 was split into two groups (north and south of Feather Reef) due to the large
+# spatial extent and observed poor results when calibrating. Calibration results after this
+# split improved the fit. The dividing point (Feather Reef) was suggested by Sam Matthews.
+feather_reef_id = "17034100104"
+feather_reef = canonical_gpkg[canonical_gpkg.UNIQUE_ID.==feather_reef_id, :]
+cb_calib_group_27 = canonical_gpkg[canonical_cb_calib_groups.==27, :]
+south_of_feather = cb_calib_group_27.LAT .< feather_reef.LAT
+new_group_28_ids = cb_calib_group_27[south_of_feather, :UNIQUE_ID]
+canonical_cb_calib_groups[canonical_gpkg.UNIQUE_ID.∈Ref(new_group_28_ids)] .= 28
+
+# Update CB_CALIB_GROUPS so their IDs are integer ordered numbers, starting at 1
+group_ids = sort(unique(canonical_cb_calib_groups))
+for (k, v) in enumerate(group_ids)
+    canonical_cb_calib_groups[canonical_cb_calib_groups.==v] .= k
+end
 
 # Write the spatial groupings to the canonical geopackage and save the file.
-canonical_gpkg[!, :SPATIAL_GROUPING] .= canonical_spatial_groupings
+canonical_gpkg[!, :CB_CALIB_GROUPS] .= canonical_cb_calib_groups
 GDF.write(canonical_file, canonical_gpkg; crs=GBRMPA_CRS)
