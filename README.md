@@ -1,5 +1,7 @@
 # Canonical Reefs
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16945486.svg)](https://doi.org/10.5281/zenodo.16945486)
+
 Generates a standardized geopackage file including data from:
 
 - Dr A. Cresswell's Lookup table `GBR_reefs_lookup_table_Anna_update_2024-03-06.[csv/xlsx]`

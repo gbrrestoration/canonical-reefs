@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Iwanaga"
+  given-names: "Takuya"
+  orcid: "https://orcid.org/0000-0001-8173-0870"
+- family-names: "Tan"
+  given-names: "Daniel"
+  orcid: "https://orcid.org/0009-0004-8696-0631"
+- family-names: "Matthews"
+  given-names: "Sam"
+  orcid: "https://orcid.org/0000-0003-1936-1220"
+- family-names: "Yu"
+  given-names: "Jonathan"
+  orcid: "https://orcid.org/0000-0002-2237-0091"
+- family-names: "Ribeiro de Almeida"
+  given-names: "Pedro"
+  orcid: "https://orcid.org/0009-0007-4814-3261"
+- family-names: "Grier"
+  given-names: "Benjamin"
+  orcid: "https://orcid.org/0009-0005-1444-6198"
+title: "Canonical Reefs"
+version: 2.0.4
+doi: 10.5281/zenodo.16945486
+date-released: 2025-08-26
+url: "https://github.com/gbrrestoration/canonical-reefs"
