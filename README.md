@@ -48,6 +48,52 @@ The entry for the GBRMPA Reef feature list (see link above) states that it has b
 in 2023-08-16. Therefore, it is assumed these IDs are the most recent and up to date, and
 are used as the default if any issues arise.
 
+## Description of included columns
+
+- `UNIQUE_ID` : Unique identifier assigned to each reef polygon. This may change over time.
+- `GBRMPA_ID` : Reef identifier as commonly used by GBRMPA
+- `LTMP_ID` : Reef identifiers commonly used by the LTMP monitoring program
+- `reef_name` : Human readable reef name
+- `RME_UNIQUE_ID` : Unique identifier as used by the ReefMod Engine. **This may differ from
+  UNIQUE_ID** due to different versions being used during the development process.
+- `RME_GBRMPA_ID` : GBRMPA identifier as used by ReefMod Engine. **This may differ** from the
+  GBRMPA_ID due to different versions being used during the development process
+- `cscape_cluster` : Which Reef Cluster simulated by C~scape the given reef belongs to. "NA"
+  if not associated with a Reef Cluster.
+- `is_LTMP_reef` : Boolean, whether the reef has had LTMP activities on it.
+- `EcoRRAP_photogrammetry_reef` : Whether the reef hosts an EcoRRAP photogrammetry transect
+  and which group EcoRRAP region it belongs to. "NA" if none.
+- `cscape_region` : Which C~scape region the reef belongs to.
+- `temp_growth` : Which temperature growth curve C~scape uses\*\*.
+- `LON` : Longitude of reef centroid
+- `LAT` : Latitude of reef centroid
+- `ReefMod_area_m2` : Estimated total reef area (in meters squared) as defined in ReefMod Engine.
+- `ReefMod_habitable_proportion` : Estimated proportion of coral habitable area (total area -
+  sand patches, etc); values range from 0 to 1
+- `COTS_target` : What considered priority level for COTS control activities. NA if not considered.
+- `management_area` : Full GBRMPA management area name
+- `management_area_short` : Shortened GBRMPA management area name
+- `GBRMPA_zones` : Associated zone and its GBRMPA provided zone name
+- `zone_colour` : Colour associated with the zone name as used by GBRMPA
+- `TUMRA_name` : Name of Traditional Use of Marine Resources Agreement the reef falls under
+- `TUMRA_entity` : Traditional Owner entity associated with the TUMRA.
+- `designated_shipping_area` : Which shipping area the reef falls into
+- `cruise_transit_lane` : Whether the reef falls near/in a recognised cruise transit lane.
+- `cruise_transit_notes` : Additional remarks regarding cruise transit lanes.
+- `indigenous_protected_area` : Which Indigenous Protected Area the reef falls under
+- `Indigenous_Land_Use_Agreement` : The ILUA a reef falls under
+- `depth_min` : Estimated minimum depth of reef
+- `depth_mean` : Mean depth estimated for reef area
+- `depth_med` : Estimated median depth
+- `depth_max` : Maximum depth estimated for reef
+- `depth_std` : Standard deviation of depth estimates across reef area
+- `depth_qc` : Quality control flags for depth estimates
+- `depth_rast_prop` : Proportion of reef polygon which had satellite data
+- `closest_port` : Closest port identified for reef
+- `min_port_distance` : Minimum straight (haversine) distance from identified port to reef
+
+**\*\*To be confirmed**
+
 ## Project Layout
 
 Assumes `src` is the project root. Each file in `src` is expected to be run in order.
