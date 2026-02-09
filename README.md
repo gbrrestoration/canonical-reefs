@@ -53,7 +53,7 @@ are used as the default if any issues arise.
 - `UNIQUE_ID` : Unique identifier assigned to each reef polygon. This may change over time.
 - `GBRMPA_ID` : Reef identifier as commonly used by GBRMPA
 - `LTMP_ID` : Reef identifiers commonly used by the LTMP monitoring program
-- `reef_name` : Human readable reef name
+- `reef_name` : Human readable reef name following GBRMPA conventions.
 - `RME_UNIQUE_ID` : Unique identifier as used by the ReefMod Engine. **This may differ from
   UNIQUE_ID** due to different versions being used during the development process.
 - `RME_GBRMPA_ID` : GBRMPA identifier as used by ReefMod Engine. **This may differ** from the
@@ -63,7 +63,7 @@ are used as the default if any issues arise.
 - `is_LTMP_reef` : Boolean, whether the reef has had LTMP activities on it.
 - `EcoRRAP_photogrammetry_reef` : Whether the reef hosts an EcoRRAP photogrammetry transect
   and which group EcoRRAP region it belongs to. "NA" if none.
-- `cscape_region` : Which C~scape region the reef belongs to.
+- `cscape_region` : Which C~scape region the reef belongs to. **to be removed**
 - `temp_growth` : Which temperature growth curve C~scape uses\*\*.
 - `LON` : Longitude of reef centroid
 - `LAT` : Latitude of reef centroid
